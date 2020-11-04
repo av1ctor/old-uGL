@@ -1,0 +1,352 @@
+
+
+
+
+
+                            SBDRV manual 1.03
+
+
+
+    SBDRV stands for Soundblaster driver, it's a low level driver for real mode
+    dos which is meant to be a hardware abstraction layer for creative sound 
+    blaster series and compatible cards.
+    
+    The goal was to offer a very simple interface to the user consisting of no 
+    more then 5-6 routines. It has been hell finding good information on sound
+    blaster programming. It seems as if it never was very well documented. And
+    each card is quite different from it's predecessor, so it hasn't always been
+    the simplest thing getting it to work. I was ready to give up on it, and 
+    started looking for a similar drivers made by other people. What i found was
+    VBE/AI which has no documentation at all (yepp, way to go guys), and creatives
+    ct-voice driver. But neither of them was anything like i had in mind.
+    
+    This lib is meant to be used together with UGLs mixer, thus it uses ugls 
+    memAlloc. If you want to use it standalone, just change memAlloc and memFree
+    to what ever you like and recompile it.
+    
+    Check version history to see which cards are supported. 
+        
+    Copyleft April, 2003
+    Blitz [blitz_dotnet@hotmail.com]
+    http://dotnet.zext.net    
+
+
+
+
+
+
+
+
+                           Table of Contents
+
+
+1.0 - Version history    
+    
+2.0 - Usage guide
+    2.1   Programming for compability
+    2.2   Five steps to playback
+    
+3.0 - Routine reference
+    3.1   sbdrv_init
+    3.2   sbdrv_end
+    3.3   sbdrv_setdmasize
+    3.4   sbdrv_getcaps
+    3.5   sbdrv_setcallback
+    3.6   sbdrv_playback_start
+    3.7   sbdrv_playback_stop
+    
+    
+
+
+    
+====================================
+ 1.0 - Version history
+====================================    
+
+    April 2003, version 1.03
+        - Added SB 1.0+ support
+
+    April 2003, version 1.02
+        - Added the ability to change the dma buffer size,
+          see sbdrv_setdmasize()
+
+    April 2003, version 1.01
+        - Replaced the little floating point compares it had
+          with integer for the sake of compability with 486 SX
+          and earlier cpus without fpu.
+        - Tested on SB Pro and Crystal Pro (SB Pro compatible)
+        - Swtiched to watcom, why? I dunno, borland 5 is just as
+          buggy and doesn't generate as good code.                  
+        
+    April 2003, version 1.00
+        - Added support for sb 2.0, sb 2.0+ and sb pro
+        - Tested on windows xp's legalcy emu, and vdm sound
+          
+          
+    April 2003, version 0.03
+        - Sound blaster 16 and compatible support
+        - Tested on sb live, sb 16, sb pci, connectix virtual pc
+          and VDM Sound all ( dsp 4.xx )
+          
+          
+          
+
+          
+
+====================================
+ 2.1 - Programming for compability
+====================================
+
+    Not allot is required to code compatible applications using this.
+    But there are a few things you have to keep in mind. 
+    
+    - Never assume what the card supports, always check the reported
+      capabilities.
+            
+    That's all :P
+    
+    
+====================================
+ 2.2 - Five steps to playback
+====================================
+
+    1. Init the soundblaster and the lib with sbdrv_init
+    
+    2. Set the callback routine
+    
+    3. Check sb capabilities to see if the requested mode is 
+       available.
+       
+    4. Start playback with sbdrv_playback_start, once you call it,
+       the callback will be called with a pointer to a buffer to 
+       fill with sound data whenever it's needed. This will continue
+       until you call sbdrv_playback_stop
+       
+    5. Stop playback with sbdrv_playback_stop
+
+    That's it.
+    
+    
+        
+    
+
+    
+
+
+
+======================================================
+   3.1 - sbdrv_init
+======================================================
+
+    Prototype:    
+        bool BDECL sbdrv_init ( uint16 base, uint16 irq, uint16 ldma,
+                                uint16 hdma )
+
+    Arguments:
+        [in]  base              - sb base adress
+              irq               - sb irq
+              ldma              - 8 bit dma channel
+              hdma              - 16 bit dma channel        
+
+    Returns:    
+        true for succses and false for error.
+        
+    Description:
+        Inits the soundblaster, if false (0) is passed as the arguments 
+        it will try to auto detect the card. However, this only works on
+        sb16 compatibles.
+        
+        Call this before anything else!
+
+    Example:
+        sbdrvexs.c
+        
+
+======================================================
+   3.2 - sbdrv_end
+======================================================
+
+    Prototype:    
+        void BDECL sbdrv_end ( void )
+
+    Arguments:
+        None
+
+    Returns:    
+        Nothing
+        
+    Description:
+        Deinits the soundblaster and the lib.
+
+    Example:
+        sbdrvexs.c
+        
+        
+======================================================
+   3.3 - sbdrv_setdmasize
+======================================================
+
+    Prototype:    
+        void BDECL sbdrv_setdmasize ( uint16 size )
+
+    Arguments:
+        [in]  size              - The dma buffer size
+
+    Returns:    
+        Nothing
+        
+    Description:
+        Sets the DMA buffer size, has to be a multiple
+        of two. Remember that only half the buffer is used
+        at a time. So if you want it to playback 4kb before
+        the callback getting called again, the dma buffer size
+        has to be 8 kb.
+        
+        Call it before calling sbdrv_init!!!!!!                                                      
+
+    Example:
+        None
+        
+        
+======================================================
+   3.4 - sbdrv_getcaps
+======================================================
+
+    Prototype:    
+        void BDECL sbdrv_getcaps ( SBCAPS far *caps )
+
+    Arguments:
+        [out] caps              - The capabilites of the card
+
+    Returns:    
+        Nothing
+        
+    Description:
+        Returns the soundblaster capabilities.
+        
+        caps.dspver                                 = dsp version
+        caps.[mono/stereo].[bits8/bits16].available = mode is available
+        caps.[mono/stereo].[bits8/bits16].sign      = [sign_false] unsigned sound data
+                                                      [sign_true ] signed sound data
+                                                      [sign_choice ] selectable
+        caps.[mono/stereo].[bits8/bits16].minrate   = Minimum sample rate for mode
+        caps.[mono/stereo].[bits8/bits16].maxrate   = Maximum sample rate for mode
+                                                      
+
+    Example:
+        sbdrvexs.c
+        
+        
+        
+======================================================
+   3.5 - sbdrv_setcallback
+======================================================
+
+    Prototype:    
+        void BDECL sbdrv_setcallbk ( void (far cdecl* callback)(uint8 far *,
+                                     uint16) )
+
+    Arguments:
+        [in]  callback          - far pointer to the callback
+
+    Returns:    
+        Nothing
+        
+    Description:
+        The callback is called once all the data in the double buffer
+        has been played and the other half needs to be refilled. As 
+        arguments, it will pass a far pointer to the buffer to be filled
+        and how many bytes the buffer is. You can always assume that the
+        size is a power of two. 
+        
+        
+        The buffer data format is
+        _______________________________________________________________
+                     ---byte1--   ---byte2--   ---byte3--   ---byte4--
+                     
+                     |--------|   |--------|   |--------|   |--------|
+        8bit mono    | chan 1 |   | chan 1 |   | chan 1 |   | chan 1 |
+                     |--------|   |--------|   |--------|   |--------|
+
+                     |--------|   |--------|   |--------|   |--------|
+        8bit stereo  | chan 1 |   | chan 2 |   | chan 1 |   | chan 2 |
+                     |--------|   |--------|   |--------|   |--------|
+                     
+                     |---------------------|   |---------------------|
+        16bit mono   |        chan 1       |   |        chan 1       |
+                     |---------------------|   |---------------------|
+
+                     |---------------------|   |---------------------|
+        16bit stereo |        chan 1       |   |        chan 2       |
+                     |---------------------|   |---------------------|
+        _______________________________________________________________
+                     
+                     
+        
+        Make sure that the callback is declared as far CDECL!        
+        
+        
+        // :::::::::::::::::
+        //   Callback example which fills the buffer with silence.
+        //
+        // :::::::::::::::::
+        void far cdecl mycallback ( uint8 far *buffer, uint16 size )
+        {
+            uint16 i;
+            
+            for ( i = 0; i < size; i++ )
+                buffer[i] = 0;
+        }
+
+    Example:
+        sbdrvexs.c
+        
+        
+        
+======================================================
+   3.6 - sbdrv_playback_start
+======================================================
+
+    Prototype:    
+        bool BDECL sbdrv_playback_start ( uint16 rate, uint16 bits, uint16 chan,
+                                          bool sign )
+        
+
+    Arguments:
+        [in]  rate              - Sampling rate (check caps)
+              bits              - 8/16 (check caps)
+              chan              - 1/2 (mono/stereo, check caps)
+              sign              - true/false (check caps)
+              
+
+    Returns:    
+        true for sucsses and false for error
+        
+    Description:
+        Will start play back if the card can handle the requested mode.
+        The callback will be called to fill the sound buffer whenver it's
+        needed.
+
+    Example:
+        sbdrvexs.c
+        
+        
+        
+======================================================
+   3.7 - sbdrv_playback_stop
+======================================================
+
+    Prototype:    
+        void BDECL sbdrv_playback_stop ( void )        
+
+    Arguments:
+        None              
+
+    Returns:    
+        Nothing
+        
+    Description:
+        Stops playback
+
+    Example:
+        sbdrvexs.c

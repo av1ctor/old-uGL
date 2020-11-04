@@ -1,0 +1,38 @@
+<fix>
+--> mouse cursor does not appear when the working page is not the first one
+
+--> completly nuts in PDS when using strings (sometimes in qb45 too)
+
+--> num/caps/scroll lights screwed up after shutting down
+
+... bugs only reported in my crappy box:
+
+--> timer mod when in pure dos isn't restoring the PIT mode/rate as expected
+    by BIOS; the DOS/BIOS time gets locked
+
+--> when allocating only one MEM DC, the dos box, where the prog was running, 
+    simply closes after the program finish, w/out reporting anything or going 
+    back to prompt
+</fix>
+
+
+<add>
+--> another filler selection for polyF (calling ul$FillSel for smalle
+    scanlines (ie: for uvf rendering) all the time is too expensive)
+
+--> bitmapped font routines...
+
+--> Fill, Flood, 
+    Cardinal or Interpolating B-spline (n ctrl points, passing through all
+                                        points, no polynomial)
+
+--> TGA/PCX/GIF loaders
+
+--> usTimer
+
+--> dithered versions of the n- to 8-, 15-, 16- and 32-bit conversion procs
+
+
+--> fill modes (alpha blend, bit patterns, tiles (bitmap), xor, gradient??)
+    for all filled gfx routines (rectf, hline, circlef, polyF...)
+</add>

@@ -1,0 +1,328 @@
+:::
+   name: uarOpen
+   desc: opens an existent UAR (UGL ARchive)
+  
+   type: function
+   args: [out] u:UAR            | UAR structure w/ info about the uar
+          [in] fname:string,    | uar name
+               mode:integer     | mode (only F4READ for now; use F4RW only
+                                |       when using uarFileAdd/Del routines)
+   retn: integer                | TRUE if ok, FALSE otherwise
+  
+   decl: uarOpen% (seg u as UAR,_
+                   fname as string,_
+                   byval mode as integer)
+  
+   chng: mar/02 written [v1ctor]
+   obs.: fname can be composed of:
+  	 - archive path+name + archive separator chars (::) + file path+name
+           inside the archive: then you can access the file directly using 
+           the uar* routines;
+         - archive path+name + the separator only w/out file name: then
+  	   you will have to use uarFileFind and uarFileSeek before accessing
+  	   the files
+  	 - only file path+name: then it will be considered a simple file, 
+  	   not an archive
+  	
+
+:::
+   name: uarClose
+   desc: closes an uar previously opened by uarOpen
+  
+   type: sub
+   args: [in] u:UAR            | UAR structure of archive to close
+   retn: none
+  
+   decl: uarClose (seg u as UAR)
+  
+   chng: mar/02 [v1ctor]
+   obs.: none
+
+:::
+   name: uarRead
+   desc: reads a block of data from a file inside an archive to memory
+  
+   type: function
+   args: [in] u:UAR,       	| UAR structure of archive to read
+              dst:long,         | far address of destine memory block
+              bytes:long        | number of bytes to read (< 64K)
+   retn: long                   | number of bytes read (0 if error)
+  
+   decl: uarRead& (seg u as UAR, byval dst as long,_
+                   byval bytes as long)
+  
+   chng: mar/02 [v1ctor]
+   obs.: uarOpen has to be called specifying the file name or the uarFileFind
+  	 + uarFileSeek routines have to be used first, before calling this
+  	 function
+
+:::
+   name: uarReadH
+   desc: reads a huge block of data from a file inside an archive to memory
+  
+   type: function
+   args: [in] u:UAR,       	| UAR structure of archive to read
+              dst:long,         | far address of destine memory block
+              bytes:long        | number of bytes to read (can be > 64K)
+   retn: long                   | number of bytes read (0 if error)
+  
+   decl: uarReadH& (seg u as UAR, byval dst as long,_
+                    byval bytes as long)
+  
+   chng: mar/02 [v1ctor]
+   obs.: same as uarRead
+
+:::
+   name: uarEOF
+   desc: checks if at end of a file inside an UAR
+  
+   type: function
+   args: [in] u:UAR            	| UAR structure of archive to check
+   retn: integer                | -1 if EOF, 0 otherwise
+  
+   decl: uarEOF% (seg u as UAR)
+  
+   chng: mar/02 [v1ctor]
+   obs.: see uarRead
+
+:::
+   name: uarPos
+   desc: gets the current position relative to a file unside an UAR
+  
+   type: function
+   args: [in] u:UAR            	| UAR structure of archive to get position
+   retn: long                   | current position (-1 if error)
+  
+   decl: uarPos& (seg u as UAR)
+  
+   chng: mar/02 [v1ctor]
+   obs.: see uarRead
+
+:::
+   name: uarSize
+   desc: gets the size of a file inside an UAR
+  
+   type: function
+   args: [in] u:UAR            	| UAR structure of archive to get the size
+   retn: long                   | current size (-1 if error)
+  
+   decl: uarSize& (seg u as UAR)
+  
+   chng: mar/02 [v1ctor]
+   obs.: see uarRead
+
+:::
+   name: uarSeek
+   desc: changes the pointer position of a file inside an UAR
+  
+   type: function
+   args: [in] u:UAR,            | UAR structure of archive to seek
+              origin:integer,   | seek origin: from start, current or end
+              bytes:long        | distance from origin (signed)
+   retn: long                   | position after seek (-1 if error)
+  
+   decl: uarSeek& (seg u as UAR,_
+                   byval origin as integer,_
+                   byval bytes as long)
+  
+   chng: mar/02 [v1ctor]
+   obs.: see uarRead
+
+:::
+   name: uarbOpen
+   desc: same as uarOpen but using a buffer when accessing the archive
+  
+   type: function
+   args: [out] ub:UARB          | UARB structure w/ info about the uar
+          [in] fname:string,    | uar name
+               mode:integer,    | mode (only F4READ for now)
+  	       bufferSize:long  | size of buffer to use
+   retn: integer                | TRUE if ok, FALSE otherwise
+  
+   decl: uarbOpen% (seg ub as UARB,_
+                    fname as string,_
+                    byval mode as integer,
+  		    byval bufferSize as long)
+  
+   chng: mar/02 written [v1ctor]
+   obs.: see uarOpen
+
+:::
+   name: uarbClose
+   desc: same as uarClose
+  
+   type: sub
+   args: [in] ub:UARB       	| UARB structure of archive to close
+   retn: none
+  
+   decl: uarbClose (seg ub as UARB)
+  
+   chng: mar/02 [v1ctor]
+   obs.: see uarClose
+
+:::
+   name: uarbRead
+   desc: same as uarRead
+  
+   type: function
+   args: [in] ub:UARB,       	| UARB structure of archive to read
+              dst:long,         | far address of destine memory block
+              bytes:long        | number of bytes to read (< 64K)
+   retn: long                   | number of bytes read (0 if error)
+  
+   decl: uarbRead& (seg ub as UARB, byval dst as long,_
+                    byval bytes as long)
+  
+   chng: mar/02 [v1ctor]
+   obs.: see uarRead
+
+:::
+   name: uarbEOF
+   desc: same as uarbEOF
+  
+   type: function
+   args: [in] ub:UARB          	| UARB structure of archive to check
+   retn: integer                | -1 if EOF, 0 otherwise
+  
+   decl: uarbEOF% (seg ub as UARB)
+  
+   chng: mar/02 [v1ctor]
+   obs.: see uarbEOF
+
+:::
+   name: uarbPos
+   desc: same as uarPos
+  
+   type: function
+   args: [in] ub:UARB          	| UARB structure of archive to get position
+   retn: long                   | current position (-1 if error)
+  
+   decl: uarbPos& (seg ub as UARB)
+  
+   chng: mar/02 [v1ctor]
+   obs.: see uarPos
+
+:::
+   name: uarbSize
+   desc: same as uarSize
+  
+   type: function
+   args: [in] ub:UARB           | UARB structure of archive to get the size
+   retn: long                   | current size (-1 if error)
+  
+   decl: uarbSize& (seg ub as UARB)
+  
+   chng: mar/02 [v1ctor]
+   obs.: see uarSize
+
+:::
+   name: uarbSeek
+   desc: same as uarSeek
+  
+   type: function
+   args: [in] ub:UARB,          | UARB structure of archive to seek
+              origin:integer,   | seek origin: from start, current or end
+              bytes:long        | distance from origin (signed)
+   retn: long                   | position after seek (-1 if error)
+  
+   decl: uarbSeek& (seg ub as UARB,_
+                    byval origin as integer,_
+                    byval bytes as long)
+  
+   chng: mar/02 [v1ctor]
+   obs.: see uarSeek
+
+:::
+   name: uarFileFind
+   desc: searches for a file inside an UAR
+  
+   type: function
+   args: [in]  u:UAR,           | UAR structure of archive to search
+  	 [out] pdir:UARDIR,	| struct to be filled with info about the file
+  	 [in] fname:string	| file to search for
+   retn: integer                | TRUE if found
+  
+   decl: uarFileFind% (seg u as UAR, pdir as UARDIR, 
+  		       fname as string)
+  
+   chng: feb/02 written [blitz]
+   obs.: if fname contains any back-slashes ("\") they MUST be converted to
+  	 slashes ("/")
+
+:::
+   name: uarFileSeek
+   desc: seeks to a file inside an UAR
+  
+   type: function
+   args: [in]  u:UAR,           | UAR structure of archive to seek to
+  	       pdir:UARDIR	| struct with info about the file to seek to
+   retn: integer                | TRUE if ok, FALSE otherwise
+  
+   decl: uarFileSeek% (seg u as UAR, pdir as UARDIR)
+  
+   chng: feb/02 [blitz]
+   obs.: use uarFileFind first to fill the pdir structure
+
+:::
+   name: uarFileExtract
+   desc: extracts a file from an UAR
+  
+   type: function
+   args: [in]  u:UAR,           | UAR structure of archive where extract from
+  	       pdir:UARDIR	| struct with info about the file to extract
+  	       outFile:string	| extracted file's name
+   retn: integer                | TRUE if ok, FALSE otherwise
+  
+   decl: uarFileExtract% (seg u as UAR, pdir as UARDIR,_
+  		          outFile as string)
+  
+   chng: feb/02 [blitz]
+   obs.: use uarFileFind first to fill the pdir structure
+
+:::
+   name: uarFileAdd
+   desc: adds a new file to an UAR
+  
+   type: function
+   args: [in]  u:UAR,           | UAR structure of archive to add file to
+  	       srcFile:string,	| path+name of source file to add
+  	       fileName:string	| name of the file
+   retn: integer                | TRUE if ok, FALSE otherwise
+  
+   decl: uarFileAdd% (seg u as UAR, srcFile as string, fileName as string)
+  
+   chng: feb/02 [blitz]
+   obs.: `fileName' CAN'T contain any drive specification (ie: "c:\") or 
+         relative paths (ie: "..\") and any back-slashes ("\") MUST be 
+  	 converted to slashes ("/")
+
+:::
+   name: uarFileDel
+   desc: deletes a file from an UAR
+  
+   type: function
+   args: [in]  u:UAR,           | UAR structure of archive to del file from
+  	       pdir:UARDIR	| struct with info about the file to delete
+   retn: integer                | TRUE if ok, FALSE otherwise
+  
+   decl: uarFileDel% (seg u as UAR, pdir as UARDIR)
+  
+   chng: feb/02 [blitz]
+   obs.: - use uarFileFind first to fill the pdir structure
+	 - archive will only be trunc'ed (size on disk < size currently)
+           after closing it calling the uarClose routine
+:::
+   name: uarCreate
+   desc: creates an empty UAR
+  
+   args: [out] u:far ptr UAR,	 | UAR struct to access/change the archive
+  	 [in] archiveName:string | archive's name
+   retn: integer 		 | TRUE if everything went ok and
+  	 			 | FALSE otherwise
+  
+   decl: uarCreate (seg u as UAR, archiveName as string)
+  
+   chng: feb/02 [Blitz]
+   obs.: - use the uarFile* routines to access the archive, adding, deleting,
+	   extracting files to/from it
+         - warning: if the archive already exists, it will be erased!

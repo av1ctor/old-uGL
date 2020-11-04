@@ -1,0 +1,99 @@
+'' uglHLine speed test
+
+DefInt A-Z
+'$Include: '..\..\inc\ugl.bi'
+
+Const FRAMES = 5000
+
+Const xRes = 320
+Const yRes = 200
+
+Declare Function Timer2& ()
+Declare Sub ExitError (msg As String)
+Declare sub parseCmmLine (bpp as string, dct as string)
+
+'':::
+        Dim video As Long
+        dim bpp as string, dct as string
+	
+        parseCmmLine bpp, dct
+
+        select case bpp
+        case "32"
+                cFmt = UGL.32BIT
+        case "16"
+                cFmt = UGL.16BIT
+        case "15"
+                cFmt = UGL.15BIT
+        case "8"
+                cFmt = UGL.8BIT
+        case else
+                ExitError "usage: hline bpp dct"
+        end select
+
+	'' initialize
+        If (Not uglInit) Then ExitError "Init"
+	
+        select case lcase$(dct)
+	case "mem"
+                video = uglNew(UGL.MEM, cFmt, xRes, yRes)
+                If (video = 0) Then ExitError "New offscreen"
+	case "ems"
+                video = uglNew(UGL.EMS, cFmt, xRes, yRes)
+                If (video = 0) Then ExitError "New offscreen"
+        case "bnk"
+                video = uglSetVideoDC(cFmt, xRes, yRes, 1)
+                If (video = 0) Then ExitError "SetVideoDC"
+        case else
+                ExitError "usage: hline bpp dct"
+	end select
+
+        fuck& = uglNew(UGL.EMS, UGL.8BIT, 32, 32)
+	
+        colors& = uglColors(cFmt)
+
+        iniTmr& = Timer2
+        For f = 0 To FRAMES-1
+                c& = Rnd * colors&
+                For y = 0 To yRes-1
+                        uglHLine video, 0, y, xRes-1, c&
+                Next y          
+        Next f
+        endTmr& = Timer2
+
+        uglRestore
+        uglEnd
+        Print "fps:"; Clng((FRAMES*18.2) / (endTmr&-iniTmr&))
+        End
+
+'':::
+Sub ExitError (msg As String)
+        uglRestore
+        uglEnd
+        Print "ERROR! "; msg
+        End
+End Sub
+
+'':::
+Function Timer2& Static
+        def seg = &h40
+
+        lsb1 = peek(&h6C+0)
+        msb1 = peek(&h6C+1)
+        lsb2 = peek(&h6C+2)
+        msb2 = peek(&h6C+3)
+        Timer2 = ((msb2 * 256& + lsb2) * 65536&) + (msb1 * 256& + lsb1)
+End Function
+
+'':::
+sub parseCmmLine (bpp as string, dct as string)
+	dim cmd as string
+
+	cmd = Command$
+	if len(cmd) = 0 then exit sub
+	
+        sp = instr(cmd, " ")
+        if (sp = len(cmd)) or (sp <= 1) then exit sub
+        bpp = mid$(cmd, 1, sp-1) 
+        dct = mid$(cmd, sp+1, len(cmd) - sp)
+end sub

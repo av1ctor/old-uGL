@@ -1,0 +1,259 @@
+needed: MMX -- no non-MMX versions, maybe never (a non-MMX cpu means it has
+               < 200MHz (unless it's a PPro, that sucks for 16-bit code
+               anyway), where a MUL takes 9 clocks (blending will need
+               2 p/ pixel) and where unpack/pack will be tooooo slow... also,
+               it will in most cases have a < 66MHz bus (reading from vram 'd
+	       be painful sloooooow)
+
+UGL's 2D FX module:
+
+	* reads from any color format (1 to 32 bpp (no 24-bit tho))
+
+	* writes to any CFMT (8, 15, 16 and 32bpp)
+
+	* can do scaling
+
+	* can do horizontal and/or vertical flipping
+
+	* can do masking (skip BRIGHT PINK)
+
+	* can do color substitution: solid color (for shadows) (sprite only),
+	  			     texture (can't scale!)    (///        ),
+	  			     and LUT (for palleted-like effects)
+
+	* can do blending (256 levels) using _many_ formulaes (color/img alpha/add/sub)
+
+	scale / blending / horz&vert / solid / LUT / texture / masking
+
+				    FEDCBA9876543210
+		;; type:			           x
+		TFX_SPRITE	equ 0000000000000000	;; (D)
+		TFX_TILE	equ 0000000000000001
+
+		;; flip	modes:			     xx
+		TFX_HFLIP	equ 0000000000000010
+		TFX_VFLIP	equ 0000000000000100
+		TFX_HVFLIP	equ 0000000000000110
+
+		;; remapping:		       xx
+		TFX_SCALE	equ 0000000000001000
+
+		;; color substitution:	 xx
+		TFX_SOLID	equ 0000000000100000
+		TFX_LUT		equ 0000000001000000
+		TFX_TEX		equ 0000000001100000
+
+		;; blend modes:	     xxxx
+		TFX_ALPHA	equ 0000000010000000
+
+
+..............................................................................
+;;::::::::::::::
+o2o_blit	proc	near
+
+		mov	pipe, ...
+		mov	pipe[first], readSource
+		mov	pipe[last], writeDestine
+
+@@loop:		pusha
+
+		mov	esi, D gs:[DC_addrTB+si]
+		mov	edi, D fs:[DC_addrTB+di]
+		cmp	si, ss:[bp].GFXCTX.current
+		jne	@@swt_src
+		shr	esi, 16
+		cmp	di, ss:[bx].GFXCTX.current
+		jne	@@swt_dst
+@@ret:		shr	edi, 16
+
+		mov	bx, pipe
+		add	si, ax
+		add	di, dx
+		call	W [bx]
+
+		popa
+		add	si, 4
+		add	di, 4
+		dec	bx
+		jnz	@@loop
+
+
+o2o_blit	endp
+
+;;:::
+;;  in: bx= pipe
+;;	ds:si-> source (a8:r8:g8:b8)
+;;	cx= pixels
+;;
+rd32		proc	near
+
+		add	bx, 2			;; ++pipe
+		pusha
+
+		mov	bp, O wrkBuffer
+
+		mov	dx, cx
+		shr	cx, 2
+		jz	@@rem
+
+@@loop:		movq	mm0, ds:[si+0]
+		movq	mm1, ds:[si+8]
+		add	si, 4*2+4*2
+		movq	ss:[bp+0], mm0
+		movq	ss:[bp+8], mm1
+		add	bp, 4*2+4*2
+		dec	cx
+		jnz	@@loop
+
+@@rem:		and	dx, 3
+		jz	@@exit
+
+@@rloop:	mov	eax, ds:[si]
+		add	si, 4
+		mov	ss:[bp], eax
+		add	bp, 4
+		dec	dx
+		jnz	@@rloop
+
+@@exit:		popa
+		jmp	W [bx]
+rd32		endp
+
+..............................................................................
+	tfxBlit video, x, y, bmp, TFX.TILE
+	tfxBlit video, x, y, bmp, TFX.SPRITE
+
+
+	tfxSetTex texPtr:farptr |
+	tfxSetLUT lut:farptr (2,4,16,256 entries) |
+	tfxSetSolid color:dword (packed RGB)
+	tfxSetAlpha alpha:word (0=0%, 256=100%)
+	tfxSetScale scale:word (64=1/4, 128=1/2, 256=1x, 512=2x, ...)
+
+	tfxBlit video, x, y, bmp, TFX_SPRITE or
+				  TFX_SCALE or
+				  TFX_HVFLIP or
+				  TFX_LUT or
+				  TFX_ALPHA or
+				  TFX_QB
+
+	any format => masking +
+	  	      scaling +
+		      h flip +
+		      v flip +
+		      color substitution +
+		      alpha blending => 8-, 15-, 16-, 32-bit
+
+..............................................................................
+ - NO ROTATION! sprite rotation will need to be implemented as separated
+   routine, probably using the affine tmapper for tiles and an own routine
+   for sprites (if no masking is added to the affine tmapper).
+
+..............................................................................
+	when alpha-blending:
+	...............3:...............2:...............1:...............0
+	00000000rrrrrrrr:00000000rrrrrrrr:00000000rrrrrrrr:00000000rrrrrrrr
+
+	...............3:...............2:...............1:...............0
+	00000000gggggggg:00000000gggggggg:00000000gggggggg:00000000gggggggg
+
+	...............3:...............2:...............1:...............0
+	00000000bbbbbbbb:00000000bbbbbbbb:00000000bbbbbbbb:00000000bbbbbbbb
+
+	256 levels of alpha for any bpp
+
+	3 muls per 4 pixels (12 color components)
+
+	r = (src * a) + (dst * 1-a)
+	(20 *.25) + (10 * .75) = 5.0 + 7.5 = 12.5
+
+	r = ((src - dst) * a) + dst || r = ((dst - src) * 1-a) + src
+	(20 - 10) * .25 + 10 = 12.5
+
+PMULLW Multiply signed packed 16-bit values and store the low 16 bits
+
+..............................................................................
+pseudo-code:
+	if ( src format == DC          ) &&
+	   ( alpha blend factor == 1.0 ) &&
+	   ( no color substitution     ) &&
+	   ( no flipping _and_ scaling ) &&
+	   ( src.cfmt == dst.cfmt      ) then
+		if ( sprite ) then
+			if ( scaling ) then
+				putMskScl()
+			elseif ( flipH && flipV )
+				putMskFlipHV()
+			elseif ( flipH )
+				putMskFlipH()
+			elseif ( flipV )
+				putMskFlipV()
+			else
+				putMsk()
+			endif
+
+		else
+			if ( scaling ) then
+				putScl()
+			elseif ( flipH && flipV )
+				putFlipHV()
+			elseif ( flipH )
+				putFlipH()
+			elseif ( flipV )
+				putFlipV()
+			else
+				put()
+			endif
+		endif
+
+		return
+	endif
+
+	!!! reading from vram is 6 to 10 times slower than writing, what is
+	    already 3 to 5 times slower than writing to sram, have to use
+	    another method for when not doing any blending but having to
+	    do masking between different cfmt (ie: bitmapped font, that is
+	    1-bit solid/tex, can be scaled, but not blended (until vector
+	    font could too)) !!!
+
+        MAX_SCANLINE = 1600 + 8
+        unsigned char[MAX_SCANLINE] srcRed, srcGreen, srcBlue, srcMask
+        unsigned char[MAX_SCANLINE] dstRed, dstGreen, dstBlue
+        1608 * 7 = 11.256 bytes (too much to be allocated statically in DGROUP)
+
+        if ( !scaling ) then
+            unpack source to srcRed|Green|Blue arrays and fill
+            srcMask array:
+            1      => read + masking + solid + unpack = 1*1=  1 proc
+            1,4,8      => read + LUT + unpack         = 3*2=  6 procs
+                          read + masking + tex + unpack
+            8,15,16,32 => read + unpack + [masking]   = 4*3= 12 procs
+                          read + masking + solid + unpack
+
+        else
+            linear interp through source reading the texels,
+            unpacking to srcRed|Green|Blue arrays and fill
+            srcMask array                              + 19= 38 procs!
+        endif
+
+        if ( flipH ) then
+            invert src* arrays
+        endif
+
+        if ( blending ) then
+            if ( scaling ) then destine width = scaled width (already clipped)
+            read destine and unpack to dstRed|Green|Blue arrays
+
+            blend srcRed|Green|Blue arrays with dstRed|Green|Blue arrays
+
+            if ( sprite ) then
+                mask using srcMask array the srcRed|Green|Blue arrays
+                with dstRed|Green|Blue arrays
+            endif
+
+            pack srcRed|Green|Blue arrays to destine format
+
+        else
+            pack srcRed|Green|Blue arrays to destine format using the
+            srcMask array
+        endif

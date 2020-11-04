@@ -1,0 +1,218 @@
+:::
+   name: tfxSetSolid
+   desc: defines the R, G & B color components that will be used with TFX.SOLID
+
+   args: [in] r:integer,        | red (0 to 255)
+              g:integer,        | green (0 to 255)
+              b:integer         | blue (0 to 255)
+   retn: none
+
+   decl: tfxSetSolid (byval r as integer, byval g as integer,_
+                      byval b as integer)
+
+   chng: aug/04 written [v1ctor]
+
+
+:::
+   name: tfxGetSolid
+   desc: returns the current R, G & B color components used by TFX.SOLID
+
+   args: [in] r:near ptr integer,  |
+              g:near ptr integer,  |
+              b:near ptr integer   |
+   retn: r, g and b set
+
+   decl: tfxGetSolid (r as integer, g as integer,_
+                      b as integer)
+
+   chng: aug/04 written [v1ctor]
+
+
+:::
+   name: tfxSetAlpha
+   desc: defines the alpha level that will be used with TFX.ALPHA
+
+   args: [in] alpha:integer     | alpha level (0= 100% source, 128= 50%/50%, 256= 100% destine)
+   retn: none
+
+   decl: tfxSetAlpha (byval alpha as integer)
+
+   chng: aug/04 written [v1ctor]
+
+
+:::
+   name: tfxGetAlpha
+   desc: returns the current alpha level used by TFX.ALPHA
+
+   args: none
+   retn: integer        | alpha (0 to 256)
+
+   decl: tfxGetAlpha% ()
+
+   chng: aug/04 written [v1ctor]
+
+
+:::
+   name: tfxSetLUT
+   desc: defines the look up table that will be used with TFX.LUT
+
+   args: [in] clut:long             | far pointer to color lut
+   retn: none
+
+   decl: tfxSetLUT (byval clut as long)
+
+   chng: aug/04 written [v1ctor]
+   obs.: - LUT must be: Red:Green:Blue:A (a byte each, A being the alignament)
+
+
+:::
+   name: tfxGetLUT
+   desc: returns the current look up table used by TFX.LUT
+
+   args: none
+   retn: long                   | far ptr to clut
+
+   decl: tfxGetLUT& ()
+
+   chng: aug/04 written [v1ctor]
+
+
+:::
+   name: tfxSetFactor
+   desc: defines the R, G & B factors that will be used with TFX.FACTMUL and TFX.FACTADD
+
+   args: [in] r:integer,        | red factor (-256 to 256)
+              g:integer,        | green factor (-256 to 256)
+              b:integer         | blue factor (-256 to 256)
+   retn: none
+
+   decl: tfxSetFactor (byval r as integer, byval g as integer,_
+                       byval b as integer)
+
+   chng: aug/04 written [v1ctor]
+   obs.: - factors can only be negative when used with TFX.FACTADD
+
+
+:::
+   name: tfxGetFactor
+   desc: returns the current R, G & B factors used by TFX.FACTMUL and TFX.FACTADD
+
+   args: [in] r:near ptr integer,  |
+              g:near ptr integer,  |
+              b:near ptr integer   |
+   retn: r, g and b set
+
+   decl: tfxGetFactor (r as integer, g as integer,_
+                       b as integer)
+
+   chng: aug/04 written [v1ctor]
+
+
+:::
+   name: tfxBlit
+   desc: draws a DC onto another DC, doing all sorts of color efx
+
+   args: [in] dstDC:long,       | destine dc
+              x:integer,        | left col
+              y:integer,        | row
+              srcDC:long,       | source dc
+              mode:integer      | OR mask
+   retn: none
+
+   decl: tfxBlit (byval dstDC as long,_
+                  byval x as integer, byval y as integer,_
+                  byval srcDC as long,_
+                  byval mode as integer)
+
+   chng: aug/04 written [v1ctor]
+   obs.: - MMX is used in 90% of time, there's no non-MMX versions
+         - 'mode' is any combination of the TFX.___ constants defined
+           at 2dfx.bi (when drawing sprites, always OR it with TFX.MASK)
+         - while you can mix tons of modes, you can only do one
+           color manipulation and blend per call, for example:
+           TFX.ALPHA OR TFX.SATADD, TFX.SOLID OR TFX.LUT can't be
+           done at same time; TFX.ALPHA OR TFX.LUT is ok, as any
+           combination of color manipulation and blend modes
+
+
+:::
+   name: tfxBlitBlit
+   desc: draws part of a DC onto another DC, doing all sorts of color efx
+
+   args: [in] dstDC:long,       | destine dc
+              x:integer,        | left col
+              y:integer,        | row
+              srcDC:long,       | source dc
+              px:integer,       | col inside source dc
+              py:integer,       | row inside source dc
+              wdt:integer,      | cols to draw
+              hgt:integer,      | rows to draw
+              mode:integer      | OR mask
+   retn: none
+
+   decl: tfxBlitBlit (byval dstDC as long,_
+                      byval x as integer, byval y as integer,_
+                      byval srcDC as long,_
+                      byval px as integer, byval py as integer,_
+                      byval wdt as integer, byval hgt as integer,_
+                      byval mode as integer)
+
+   chng: aug/04 written [v1ctor]
+   obs.: - same as for tfxBlit
+         - 'px' and 'py' will be clipped against source dc
+         - 'wdt' and 'hgt' CAN'T be > source dc's width and height
+
+
+:::
+   name: tfxBlitScl
+   desc: draws a scaled DC onto another DC, doing all sorts of color efx
+
+   args: [in] dstDC:long,       | destine dc
+              x:integer,        | left col
+              y:integer,        | row
+              srcDC:long,       | source dc
+              xScale:integer,   | x scale (128=50%, 256=100%, 512=200%, etc)
+              yScale:integer,   | y scale (128=50%, 256=100%, 512=200%, etc)
+              mode:integer      | OR mask
+   retn: none
+
+   decl: tfxBlitScl (byval dstDC as long,_
+                     byval x as integer, byval y as integer,_
+                     byval srcDC as long,_
+                     byval xScale as integer, byval yScale as integer,_
+                     byval mode as integer)
+
+   chng: aug/04 written [v1ctor]
+   obs.: - same as for tfxBlit
+
+
+:::
+   name: tfxBlitBlitScl
+   desc: draws part of a scaled DC onto another DC, doing all sorts of color efx
+  
+   args: [in] dstDC:long,       | destine dc
+              x:integer,        | left col
+              y:integer,        | row
+              srcDC:long,       | source dc
+              px:integer,       | source dc x offset
+              py:integer,       | source dc y offset
+              wdt:integer,      | pixels to copy
+              hgt:integer,      | lines to copy
+              xScale:integer,   | x scale (128=50%, 256=100%, 512=200%, etc)
+              yScale:integer,   | y scale (/)
+              mode:integer      | OR mask
+   retn: none
+  
+   decl: tfxBlitBlitScl (byval dstDC as long,_
+                         byval x as integer, byval y as integer,_
+                         byval srcDC as long,_
+                         byval px as integer, byval py as integer,_
+                         byval wdt as integer, byval hgt as integer
+                         byval xScale as integer, byval yScale as integer,_
+                         byval mode as integer)
+  
+   chng: aug/04 written [v1ctor]
+   obs.: - same as for tfxBlit, but doesn't suport flipping
+         WARNING: no check or clipping is done with px, py, wdt & hgt,
+                  they must be valid coordinates inside src DC, or
+                  the program calling this function may crash

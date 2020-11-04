@@ -1,0 +1,317 @@
+                .include common.inc
+                .include sbdrvint.inc
+                .include sbdrv.inc
+
+.data
+
+testint     byte            ?
+highspd     byte            ?
+inpfilt     byte            ?
+outfilt     byte            ?
+irqvect     byte            ?
+sbpoutf     byte            ?
+picmska     byte            ?
+picmskb     byte            ?
+newmska     byte            ?
+newmskb     byte            ?
+oldsbint    dword           ?
+snglcycle   byte            ?
+sbctx       SBCONTEXT       <0>
+
+
+
+.code
+
+
+
+;; :::::::::::::::::
+;;  Init the sound blaster
+;;
+;; :::::::::::::::::
+sbdrv_init      proc    public uses bx di es,\
+                        port:word, irq:word, ldma:word, hdma:word
+
+                ;;
+                ;; Are we required to do autodetection? (dsp 4+ only)
+                ;;
+                .if ( port == false )
+                
+                    ;;
+                    ;; Detect port
+                    ;;
+                    mov     cx, 0x200
+                    for ( port = 0x200; port <= 0x280; port += 0x10 )
+                    {
+                         sbdrv.init = true;
+                         sbdrv.base = port;
+                         
+                         if ( sbdrv_dsp_reset() == true )
+                             break;
+                         
+                         sbdrv.init = false;
+                         sbdrv.base = false;
+                    }
+                    
+                    if ( sbdrv.init == false )
+                        return false;                
+                
+                
+                ;;
+                ;; Caller has supplied the settings
+                ;;
+                .else
+                    mov     ax, port
+                    mov     bx, irq
+                    mov     cx, ldma
+                    mov     dx, hdma                    
+                    
+                    mov     sbctx.port, ax
+                    mov     sbctx.irq,  bx
+                    mov     sbctx.ldma, cx
+                    mov     sbctx.hdma, dx
+                    mov     sbctx.init, true
+                    
+                    invoke  sbdrv_sbdrv_dsp_reset                    
+                .endif
+                
+                ;;
+                ;; Only sb 1.0+
+                ;;
+                cmp     sbctx.dspversion, dspver1
+                jl      @@error
+                cmp     sbctx.dspversion, dspver5
+                jge     @@error
+                
+                
+                ;;
+                ;; Allocated DMA memory for max buffer length supported
+                ;;
+                invoke  sbdrv_dma_allocmem, SB_BUFFLEN_MAX
+                or      dx, dx
+                jz      @@error
+                shl     edx, 16
+                mov     dx, ax
+                mov     sbctx.blkbase, edx
+                
+                
+                ;;
+                ;; Install ISR and enable IRQ
+                ;;
+                cli                
+                
+                in      al, 0x21
+                mov     picmska, al
+                in      al, 0xa1
+                mov     picmskb, al
+                
+                mov     ax, sbctx.irq
+                mov     cx, ax
+                .if ( ax <= 7 )
+                    add     ax, 0x08
+                .else
+                    add     ax, 0x70 - 0x08
+                .endif
+                mov     irqvect, al                
+                
+                ;;                
+                ;; newmska = (1 << sbdrv.irq);
+                ;; newmskb = (1 << sbdrv.irq)>>8;
+                ;; newmska = ~newmska;
+                ;; newmskb = ~newmskb;
+                ;;
+                mov     ax, 1
+                shl     ax, cl
+                mov     bx, ax
+                shr     bx, 8
+                not     ax
+                not     bx
+                mov     newmska, al
+                mov     newmskb, bl
+                
+                mov     al, picmska
+                mov     bl, picmskb
+                and     al, newmska
+                and     bl, newmskb
+                out     0x21, al
+                out     0xa1, bl
+                sti
+                
+                
+                
+                
+	//
+	// Install ISR and enable IRQ
+	//
+    _asm cli
+    picmska = inp( 0x21 );
+    picmskb = inp( 0xa1 );
+    
+    if ( sbdrv.irq > 7) 
+        irqvect = sbdrv.irq - 8 + 0x70;
+    else
+        irqvect = sbdrv.irq + 8;
+    
+    newmska = (1 << sbdrv.irq);
+    newmskb = (1 << sbdrv.irq)>>8;
+    newmska = ~newmska;
+    newmskb = ~newmskb;
+    
+    oldint = _getvect( irqvect );
+    _setvect( irqvect, sbdrv_isr );
+    
+    outp( 0x21, picmska & newmska );
+    outp( 0xa1, picmskb & newmskb );  
+    _asm sti
+    
+    sbdrv.init = true;
+    return true;                
+                
+                
+                
+                
+                
+                
+                        
+sbdrv_init      endp
+
+
+                        
+
+// :::::::::::::::::
+//  Init the sound blaster
+//
+// :::::::::::::::::
+bool BDECL sbdrv_init ( uint16 base, uint16 irq, uint16 ldma, uint16 hdma )
+{
+    uint16 port, i;
+    
+    //
+    // Are we required to do autodetection? (dsp 4+ only)
+    //
+    if ( base == false ) 
+    {
+        //
+        // Detect port
+        //
+        for ( port = 0x200; port <= 0x280; port += 0x10 )
+        {
+             sbdrv.init = true;
+             sbdrv.base = port;
+             
+             if ( sbdrv_dsp_reset() == true )
+                 break;
+             
+             sbdrv.init = false;
+             sbdrv.base = false;
+        }
+        
+        if ( sbdrv.init == false )
+            return false;
+        
+        //
+        // Detect IRQ
+        //
+        outp( sbdrv.base+0x04, 0x80 );
+        switch ( inp( sbdrv.base+0x05 ) & 0x0f )
+        {
+            case 0x01: sbdrv.irq =  2; break;
+            case 0x02: sbdrv.irq =  5; break;
+            case 0x04: sbdrv.irq =  7; break;
+            case 0x08: sbdrv.irq = 10; break;
+            default: sbdrv.irq = false; break;
+        }
+        
+        //
+        // Detect 8 bit dma channel
+        //
+        outp( sbdrv.base+0x04, 0x81 );
+        switch ( inp( sbdrv.base+0x05 ) & 0x0b )
+        {
+            case 0x01: sbdrv.ldma = 0; break;
+            case 0x02: sbdrv.ldma = 1; break;
+            case 0x0b: sbdrv.ldma = 1; break;
+            case 0x08: sbdrv.ldma = 3; break;
+            default: sbdrv.ldma = false; break;
+        }
+        
+        //
+        // Detect 16 bit dma channel
+        //
+        outp( sbdrv.base+0x04, 0x81 );
+        switch ( inp( sbdrv.base+0x05 ) >> 5 )
+        {
+            case 0x01: sbdrv.hdma = 5; break;
+            case 0x02: sbdrv.hdma = 6; break;
+            case 0x04: sbdrv.hdma = 7; break;
+            default: sbdrv.hdma = false; break;
+        } 
+        
+        //
+        // Were we able to detect all settings?
+        //
+        if ( (sbdrv.irq == false) || (sbdrv.ldma == false) )
+        {
+            sbdrv.init = false;
+            return false;
+        }
+        
+        if ( (sbdrv.hdma == false) && (sbdrv.dspversion >= 4) )
+        {
+            sbdrv.init = false;
+            return false;
+        }
+    }
+    
+    //
+    // Caller has supplied the settings
+    //
+    else
+    {  
+        sbdrv.init = true;
+        sbdrv.base = base;
+        sbdrv.irq  = irq;
+        sbdrv.ldma = ldma;
+        sbdrv.hdma = hdma;
+        sbdrv_dsp_reset();
+    }
+    
+    //
+    // Only sb 1.0+
+    //
+    if ( (sbdrv.dspversion < dspver1) || (sbdrv.dspversion >= dspver5) )
+        return false;
+    
+    //
+    // Allocated DMA memory for max buffer length supported
+    //
+    if ( (sbdrv.blkbase = sbdrv_dma_allocmem( SB_BUFFLEN_MAX )) == false )
+        return false;
+
+
+	//
+	// Install ISR and enable IRQ
+	//
+    _asm cli
+    picmska = inp( 0x21 );
+    picmskb = inp( 0xa1 );
+    
+    if ( sbdrv.irq > 7) 
+        irqvect = sbdrv.irq - 8 + 0x70;
+    else
+        irqvect = sbdrv.irq + 8;
+    
+    newmska = (1 << sbdrv.irq);
+    newmskb = (1 << sbdrv.irq)>>8;
+    newmska = ~newmska;
+    newmskb = ~newmskb;
+    
+    oldint = _getvect( irqvect );
+    _setvect( irqvect, sbdrv_isr );
+    
+    outp( 0x21, picmska & newmska );
+    outp( 0xa1, picmskb & newmskb );  
+    _asm sti
+    
+    sbdrv.init = true;
+    return true;
+}

@@ -1,0 +1,126 @@
+
+
+* adding high-level procs:
+  - put the file in the src/ugl dir, starting it with ugl... name;
+
+  - add the `include common.inc' directive, no need to make processor
+    selection or whatever;
+
+  - the code segment can be UGL code segment (using the UGL_CODE and
+    UGL_ENDS macros) or the default code seg for the file (.code) if not
+    accessing any UGL global vars, that are allocated in UGL code, or
+    calling near routines;
+
+  - declare the proc in the src/inc/ugl.inc include file, using the PROTO
+    directive;
+
+  - add the prototype to the bi/ugl.bi file;
+
+  - add the file name (w/out the .asm extension) to src/ugl/ugl.mk make-file
+    to the ASMLIST macro
+
+  - do some assemble testing 1st using masm alone, or the whole making
+    process will stop;
+
+  - add it to vslick's project;
+
+  - write a test for it :P.
+
+* adding low-level procs:
+  - add a new item to the CFMT struct @ src/inc/cfmt.inc for the new proc
+    (it's a far pointer)
+
+  - if the proc is too important or if you care about crashes if the drive
+    for a specific DC would not initialize correctly, add to uglInit proc
+    (@ src/ugl/uglInit.asm) a line to set the pointer to a dummy proc if
+    any error occur;
+
+  - for every color format you plan to support, go to the the src/cfmt dir, 
+    and make new procs in any correspondent dir (like, b16 for 16-bit DCs, 
+    adding them to the respective make-files, following the name convention 
+    (DC fmt + proc name (max 8 chars) like: 16hLine for 16BIT DCs and for 
+    HLine proc);
+
+  - add the procs for the respective CFMT initialization routines (like in
+    16main.asm, 15main.asm, etc), using the SET_FMT macro;
+
+  - if using the RdSwitch/WrSwitch/RdAccess/WrAccess addressing procs for 
+    accessing a DC, the code must be in the UGL code segment (UGL_CODE/
+    UGL_ENDS macros), otherwise, the code seg can be the default (.code); 
+    declared the procs as far public, don't declare them in any
+    include file, they aren't supposed to be called directly.
+  
+o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o-o
+* DCs (Device Contexts) have to be _always_ paragraph aligned, otherwise,
+  nothing will work.
+
+* the BNK DCs > 64K must to have power of 2 widths, 256,512,1024...,
+  otherwise the bank will break at middle of a scanline.
+  
+* MEM and EMS DCs must have multiple of 8 width, and if > 16K/64K have to
+  have widths where the last scanline inside of a seg breaks outside the
+  visible area.
+
+* for EMS DCs, max 1 physical page (16K) will be mapped for each DC
+  at any time, for be able to handle EMS to/from EMS DCs transfers, and 'cos
+  multiple pages mapping is only supported by EMM ver 4+ and multiple calls
+  to map one page at time is too slow (and the pages wouldn't be accessed in
+  small DCs (like for sprites)).
+
+* for EMS DCs, source and destine can't be the same, 'cos EMM can't handle
+  aliasing (setting the same logpg to more than one phypg and accessing them).
+  
+* the maximum size of a EMS DC is 4MB (256 * 16K), 'cos only 8 bits can be
+  used as local page in addrTB (the others 8 bits are for the handle).
+
+* for better performance when using textures from EMS DCs, tile the texture,
+  otherwise a lot of EMS mapping can happen depending how the texture have
+  to be accessed (if texture sizes are less than 16K, only one mapping is
+  needed before entering the outer-loop though); for MEM DCs, a lot of speed 
+  up can be archived, limiting the texture sizes to 64K (only before entering 
+  the outer-loop, the segment will have to be set this way).
+
+* the New routine can't be called to alloc/free BNK bitmaps, as accessing
+  vram bmps in banked modes is too slow and as we can't use HW blitters,
+  instead, the DC for the vram is returned by setVideoDC function and the
+  visual and work pages are set using the correspondent routines. the DC
+  that setVideoDC returns has yRes * vidPages scanlines, vram above that 
+  is never used.
+
+* the select_windows function works like:
+
+  if no windowing:
+  	read from and write to standard address of current mode (like A000h)
+ 
+  else:
+ 	+--------+-----+-----+
+ 	| window |  A  |  B  |
+ 	+--------+-----------+--------------+
+          	 |    mode   | r w selected |
+          	 +-----+-----+--------------+
+          	 | r w | r w | A B          |
+         	 +-----+-----+--------------+
+         	 | r   |   w | A B          |
+         	 +-----+-----+--------------+
+         	 | r w |     | A A          |
+         	 +-----+-----+--------------+
+         	 |   w | r   | B A          |
+         	 +-----+-----+--------------+
+         	 |     | r w | B B          |
+         	 +-----+-----+--------------+
+ 
+           	 can't happen:
+          	 +-----+-----+
+          	 | r   | r w |
+          	 +-----+-----+
+          	 |   r |   r |
+          	 +-----+-----+
+          	 |   w | r w |
+          	 +-----+-----+
+          	 |   w |   w |
+          	 +-----+-----+
+
+* winShift is calculated using the WinGranularity and the WinSize fields
+  assuming WinSize is always equal to 64 (64K):
+  winShift= 6 - BSR(WinGranularity) (where BSR returns the last bit set, 
+                                    starting at 0)

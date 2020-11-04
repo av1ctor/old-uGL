@@ -1,0 +1,6038 @@
+<html>
+    <head>
+        <style type="text/css">
+            a:link {
+                color #ff9f15; font-weight: bold; text-decoration: none
+            }
+            a:visited {
+                color: #ff9f15; font-weight: bold; text-decoration: none
+            }
+            a:hover {
+                color: #ffffff; font-weight: bold; text-decoration: underline
+            }
+        </style>
+        
+        <title>µGL Manual 0.23</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    </head>
+    
+    <body bgcolor="#000033" text="#CCCCCC">
+        <pre>
+    
+    
+    
+    
+                               µGL Manual version 0.23
+    
+    
+    
+        Let me start by saying how much I hate writing manuals. I hate it
+        thiiiis much. Now, I myself am the kind of person who never reads
+        a manual or book from the first page to the last. It's just too,
+        well it's too boring. I like to get to the good stuff right away. So
+        I'm going to do  you guys a favor and split this manual in two parts,
+        one that is a quick guide to µGL. It will tell you what you need to
+        know to get  started with the library. Then once you think you need
+        to know more details or want to do more complex tasks you can start
+        checking through the rest of the manual.
+        
+        Maybe you're wondering what µGL really is? It's a library programmed
+        in pure x86 assembly for game development in Microsoft QuickBasic 4.x
+        or better (including Visual Basic for DOS) and Borland C. The minimum
+        requirements are at least a 386, although this library uses MMX
+        intensely so for best performance a MMX capable processor is recommended.
+        A VESA compatible video card is also required for resolutions other
+        then 320x200x8. And of course you will need dos, but fortunately it works
+        equally as well with  Windows 9.x , Windows NT/2K/XP DOS emulation.
+        We haven't tried it with Windows 3.x nor have we tried it with older
+        versions. So we  can't say if it works well with them or not.
+         
+        So what can µGL do you ask? 
+        Here is a list of some of the things it offers. 
+        - Performance 
+        - Protection against crashes through incorrect coding
+        - A set of 2D sprite routines
+        - A set of polygon routines (complex, convex)
+        - A simple but powerful interface 
+        - Infinite number of timers running in parallel 
+        - A sound module with infinite channels and more
+        - The ability to play 1-64 channel protracker mod files in
+          the background 
+        - Debugging features that will reports mistakes in your
+          code to help you remove bugs at the same time they occur. 
+                           
+        Big thanks to Joakim A-R and Mr. Moose for helping me with writing this
+        so called "manual".
+        
+        Visit us at <a href="http://www.bad-logic.com">http://www.bad-logic.com</a>
+    
+    
+    
+    
+    
+    
+    
+    
+                           Table of Contents
+
+
+1.0 - Basics
+    1.1 - Getting Started
+        1.1.1   <a href="#1.1.1">The difference between debug</a>
+                <a href="#1.1.1">and release builds</a>
+        1.1.2   <a href="#1.1.2">How to load µGL</a>
+        1.1.3   <a href="#1.1.3">The .bi/.h file including order</a>
+        1.1.4   <a href="#1.1.4">What is a handle?</a>
+        1.1.5   <a href="#1.1.5">What is a DC?</a>
+        1.1.6   <a href="#1.1.6">What's so special about them?</a>
+        1.1.7   <a href="#1.1.7">Initializing µGL</a>
+        1.1.8   <a href="#1.1.8">Setting up the video mode</a>
+        1.1.9   <a href="#1.1.9">Creating a new DC</a>
+        1.1.10  <a href="#1.1.10">Using basic primitives</a>
+        1.1.11  <a href="#1.1.11">Using uglGet and uglPut</a>
+        1.1.12  <a href="#1.1.12">What's UAR and how do i use it?</a>
+        1.1.13  <a href="#1.1.13">What's the difference between</a>
+                <a href="#1.1.13">UBF and UVF fonts?</a>          
+        1.1.14  <a href="#1.1.14">Version History</a>
+    
+    1.2 - Compability notes
+        1.2.1   <a href="#1.2.1">Compability issues</a>                
+        1.2.2   <a href="#1.2.2">How to assure video compability</a>
+        1.2.3   <a href="#1.2.3">How to assure audio compability</a>
+        1.2.4   <a href="#1.2.4">EMS issues</a>
+
+
+2.0 - µGL Functions
+    2.1 - Initilization and finalization
+        2.1.1   <a href="#2.1.1">uglInit</a>
+        2.1.2   <a href="#2.1.2">uglEnd</a>
+        2.1.3   <a href="#2.1.3">uglSetVideoDC</a>
+        2.1.4   <a href="#2.1.4">uglGetVideoDC</a>
+        2.1.5   <a href="#2.1.5">uglGetClipRect</a>
+        2.1.6   <a href="#2.1.6">uglSetClipRect</a>
+        2.1.7   <a href="#2.1.7">uglGetSetClipRect</a>
+        2.1.8   <a href="#2.1.8">uglRestore</a>
+        2.1.9   <a href="#2.1.9">uglNew</a>
+        2.1.10  <a href="#2.1.10">uglNewMult</a>
+        2.1.11  <a href="#2.1.11">uglDel</a>
+        2.1.12  <a href="#2.1.12">uglDelMult</a>
+
+    2.2 Primitives and sprite routines
+        2.2.1   <a href="#2.2.1">uglRect</a>
+        2.2.2   <a href="#2.2.2">uglRectF</a>
+        2.2.3   <a href="#2.2.3">uglCircle</a>
+        2.2.4   <a href="#2.2.4">uglCircleF</a>
+        2.2.5   <a href="#2.2.5">uglClear</a>
+        2.2.6   <a href="#2.2.6">uglCubicBez</a>
+        2.2.7   <a href="#2.2.7">uglQuadricBez</a>
+        2.2.8   <a href="#2.2.8">uglGet</a>
+        2.2.9   <a href="#2.2.9">uglPut</a>
+        2.2.10  <a href="#2.2.10">uglPutMsk</a>
+        2.2.11  <a href="#2.2.11">uglHLine</a>
+        2.2.12  <a href="#2.2.12">uglVLine</a>
+        2.2.13  <a href="#2.2.13">uglLine</a>
+        2.2.14  <a href="#2.2.14">uglPSet</a>
+        2.2.15  <a href="#2.2.15">uglPGet</a>
+        2.2.16  <a href="#2.2.16">uglPoly</a>
+        2.2.17  <a href="#2.2.17">uglPolyF</a>
+        2.2.18  <a href="#2.2.18">uglPolyPoly</a>
+        2.2.19  <a href="#2.2.19">uglPolyPolyF</a>
+        2.2.20  <a href="#2.2.20">uglEllipse</a>
+        2.2.21  <a href="#2.2.21">uglEllipseF</a>
+        2.2.22  <a href="#2.2.22">uglPutFlip</a>
+        2.2.23  <a href="#2.2.23">uglPutMskFlip</a>
+        2.2.24  <a href="#2.2.24">uglPutRot</a>
+        2.2.25  <a href="#2.2.25">uglPutScl</a>
+        2.2.26  <a href="#2.2.26">uglPutRotScl</a>
+        2.2.27  <a href="#2.2.27">uglPutMskRot</a>
+        2.2.28  <a href="#2.2.28">uglPutMskScl</a>
+        2.2.29  <a href="#2.2.29">uglPutMskRotScl</a>
+        
+    2.3 Paging
+        2.3.1   <a href="#2.3.1">uglSetVisPage</a>
+        2.3.2   <a href="#2.3.2">uglSetWrkPage</a>
+
+    2.4 Conversion routines
+        2.4.1   <a href="#2.4.1">uglColor</a>
+        2.4.2   <a href="#2.4.2">uglColor8</a>
+        2.4.3   <a href="#2.4.3">uglColor15</a>
+        2.4.4   <a href="#2.4.4">uglColor16</a>
+        2.4.5   <a href="#2.4.5">uglColor32</a>
+        2.4.6   <a href="#2.4.6">uglGetConv</a>
+        2.4.7   <a href="#2.4.7">uglPutConv</a>
+        2.4.8   <a href="#2.4.8">uglRowRead</a>
+        2.4.9   <a href="#2.4.9">uglRowReadEx</a>
+        2.4.10  <a href="#2.4.10">uglRowWrite</a>
+        2.4.11  <a href="#2.4.11">uglRowWriteEx</a>
+        2.4.12  <a href="#2.4.12">uglRowSetPal</a>
+
+    2.5 Image loading
+        2.5.1   <a href="#2.5.1">uglNewBMP</a>
+        2.5.2   <a href="#2.5.2">uglPutBMP</a>
+        2.5.3   <a href="#2.5.3">uglNewBMPEx</a>
+        2.5.4   <a href="#2.5.4">uglPutBMPEx</a>
+
+    2.6 Information routines
+        2.6.1   <a href="#2.6.1">uglColors</a>
+        2.6.2   <a href="#2.6.2">uglColorsEx</a>
+        2.6.3   <a href="#2.6.3">uglDCget</a>
+        2.6.4   <a href="#2.6.4">uglDCAccessRd</a>
+        2.6.5   <a href="#2.6.5">uglDCAccessWr</a>
+        2.6.6   <a href="#2.6.6">uglDCAccessRdWr</a>
+
+
+    2.7 Convex Polygons
+        2.7.1   <a href="#2.7.1">uglTriF</a>
+        2.7.2   <a href="#2.7.2">uglQuadF</a>
+        2.7.3   <a href="#2.7.3">uglTriT</a>
+        2.7.4   <a href="#2.7.4">uglQuadT</a>
+        2.7.5   <a href="#2.7.5">uglTriG</a>
+        2.7.6   <a href="#2.7.6">uglTriTP</a>
+        
+    2.8 Palette
+        2.8.1   <a href="#2.8.1">uglPalGet</a>
+        2.8.2   <a href="#2.8.2">uglPalSet</a>
+        2.8.3   <a href="#2.8.3">uglPalGetBuff</a>
+        2.8.4   <a href="#2.8.4">uglPalSetBuff</a>        
+        2.8.5   <a href="#2.8.5">uglPalLoad</a>
+        2.8.6   <a href="#2.8.6">uglPalUsingLin</a>
+    
+       
+
+3.0 - µGL Utility functions
+    3.1 Splines
+        3.1.1   <a href="#3.1.1">ugluCubicBez</a>
+        3.1.2   <a href="#3.1.2">ugluCubicBez3D</a>
+        3.1.3   <a href="#3.1.3">ugluQuadricBez</a>
+        3.1.4   <a href="#3.1.4">ugluQuadricBez3D</a>
+        
+    3.2 Keyboard
+        3.2.1   <a href="#3.2.1">kbdInit</a>
+        3.2.2   <a href="#3.2.2">kbdEnd</a>
+        3.2.3   <a href="#3.2.3">kbdPause</a>
+        3.2.4   <a href="#3.2.4">kbdResume</a>
+
+    3.3 Mouse
+        3.3.1   <a href="#3.3.1">mouseInit</a>
+        3.3.2   <a href="#3.3.2">mouseReset</a>
+        3.3.3   <a href="#3.3.3">mouseEnd</a>
+        3.3.4   <a href="#3.3.4">mouseCursor</a>
+        3.3.5   <a href="#3.3.5">mouseShow</a>
+        3.3.6   <a href="#3.3.6">mouseHide</a>
+        3.3.7   <a href="#3.3.7">mouseRange</a>
+        3.3.8   <a href="#3.3.8">mousePos</a>
+        3.3.9   <a href="#3.3.9">mouseRatio</a>
+
+    3.4 Fonts
+        3.4.1   <a href="#3.4.1">fontNew</a>
+        3.4.2   <a href="#3.4.2">fontDel</a>
+        3.4.3   <a href="#3.4.3">fontSetAlign</a>
+        3.4.4   <a href="#3.4.4">fontGetAlign</a>
+        3.4.5   <a href="#3.4.5">fontHAlign</a>
+        3.4.6   <a href="#3.4.6">fontSetHAlign</a>
+        3.4.7   <a href="#3.4.7">fontVAlign</a>
+        3.4.8   <a href="#3.4.8">fontSetVAlign</a>
+        3.4.9   <a href="#3.4.9">fontExtraspc</a>
+        3.4.10  <a href="#3.4.10">fontSetExtraspc</a>
+        3.4.11  <a href="#3.4.11">fontGetExtraspc</a>
+        3.4.12  <a href="#3.4.12">fontUnderline</a>
+        3.4.13  <a href="#3.4.13">fontSetUnderline</a>
+        3.4.14  <a href="#3.4.14">fontGetUnderline</a>
+        3.4.15  <a href="#3.4.15">fontStrikeOut</a>
+        3.4.16  <a href="#3.4.16">fontSetStrikeOut</a>
+        3.4.17  <a href="#3.4.17">fontGetStrikeOut</a>
+        3.4.18  <a href="#3.4.18">fontOutline</a>
+        3.4.19  <a href="#3.4.19">fontSetOutline</a>
+        3.4.20  <a href="#3.4.20">fontGetOutline</a>
+        3.4.21  <a href="#3.4.21">fontBGMode</a>
+        3.4.22  <a href="#3.4.22">fontSetBGMode</a>
+        3.4.23  <a href="#3.4.23">fontGetBGMode</a>
+        3.4.24  <a href="#3.4.24">fontBGColor</a>
+        3.4.25  <a href="#3.4.25">fontSetBGColor</a>
+        3.4.26  <a href="#3.4.26">fontGetBGColor</a>
+        3.4.27  <a href="#3.4.27">fontSize</a>
+        3.4.28  <a href="#3.4.28">fontSetSize</a>
+        3.4.29  <a href="#3.4.29">fontGetSize</a>
+        3.4.30  <a href="#3.4.30">fontAngle</a>
+        3.4.31  <a href="#3.4.31">fontSetAngle</a>
+        3.4.32  <a href="#3.4.32">fontGetAngle</a>
+        3.4.33  <a href="#3.4.33">fontWidth</a>
+        3.4.34  <a href="#3.4.34">fontTextOut</a>
+
+    3.5 Timer
+        3.5.1   <a href="#3.5.1">tmrInit</a>
+        3.5.2   <a href="#3.5.2">tmrEnd</a>
+        3.5.3   <a href="#3.5.3">tmrNew</a>
+        3.5.4   <a href="#3.5.4">tmrDel</a>
+        3.5.5   <a href="#3.5.5">tmrPause</a>
+        3.5.6   <a href="#3.5.6">tmrResume</a>
+        3.5.7   <a href="#3.5.7">tmrUs2Freq</a>
+        3.5.8   <a href="#3.5.8">tmrMs2Freq</a>
+        3.5.9   <a href="#3.5.9">tmrTick2Freq</a>
+        3.5.10  <a href="#3.5.10">tmrSec2Freq</a>
+        3.5.11  <a href="#3.5.11">tmrMin2Freq</a>
+        3.5.12  <a href="#3.5.12">tmrCallbkSet</a>
+        3.5.13  <a href="#3.5.13">tmrCallbkCancel</a>                
+        
+    3.6 Sound
+        3.6.1   <a href="#3.6.1">sndInit</a>
+        3.6.2   <a href="#3.6.2">sndEnd</a>
+        3.6.3   <a href="#3.6.3">sndOpenOutPut</a>
+        3.6.4   <a href="#3.6.4">sndPlay</a>
+        3.6.5   <a href="#3.6.5">sndPlayEx</a>
+        3.6.6   <a href="#3.6.6">sndPause</a>
+        3.6.7   <a href="#3.6.7">sndResume</a>
+        3.6.8   <a href="#3.6.8">sndStop</a>
+        3.6.9   <a href="#3.6.9">sndNewWav</a>
+        3.6.10  <a href="#3.6.10">sndNewRaw</a>
+        3.6.11  <a href="#3.6.11">sndNewWavEx</a>
+        3.6.12  <a href="#3.6.12">sndDel</a>
+        3.6.13  <a href="#3.6.13">sndSetInterp</a>
+        3.6.14  <a href="#3.6.14">sndMasterSetPan</a>
+        3.6.15  <a href="#3.6.15">sndVoiceSetDefault</a>
+        3.6.16  <a href="#3.6.16">sndVoiceSetSample</a>
+        3.6.17  <a href="#3.6.17">sndVoiceSetDir</a>
+        3.6.18  <a href="#3.6.18">sndVoiceSetLoopMode</a>
+        3.6.19  <a href="#3.6.19">sndVoiceSetLoopPoints</a>
+        3.6.20  <a href="#3.6.20">sndVoiceSetVol</a>
+        3.6.21  <a href="#3.6.21">sndVoiceSetPan</a>
+        3.6.22  <a href="#3.6.22">sndVoiceSetRate</a>
+        
+    3.7 Music
+        3.7.1   <a href="#3.7.1">modInit</a>
+        3.7.2   <a href="#3.7.2">modEnd</a>
+        3.7.3   <a href="#3.7.3">modNew</a>
+        3.7.4   <a href="#3.7.4">modDel</a>
+        3.7.5   <a href="#3.7.5">modPlay</a>
+        3.7.6   <a href="#3.7.6">modPause</a>
+        3.7.7   <a href="#3.7.7">modResume</a>
+        3.7.8   <a href="#3.7.8">modStop</a>        
+        3.7.9   <a href="#3.7.9">modGetChanVU</a>
+        3.7.10  <a href="#3.7.10">modGetPlayState</a>
+        3.7.11  <a href="#3.7.11">modGetVolume</a>
+        3.7.12  <a href="#3.7.12">modSetVolume</a>        
+        3.7.13  <a href="#3.7.13">modSetStereo</a>
+        3.7.14  <a href="#3.7.14">modSetCacheSize</a>
+        3.7.15  <a href="#3.7.15">modFadeOut</a>
+        3.7.16  <a href="#3.7.16">modFadeIn</a>
+        3.7.17  <a href="#3.7.17">modFadeToVol</a>
+        
+    3.8 UAR - µGL Archive
+        3.8.1   <a href="#3.8.1">uarOpen</a>
+        3.8.2   <a href="#3.8.2">uarClose</a>
+        3.8.3   <a href="#3.8.3">uarRead</a>
+        3.8.4   <a href="#3.8.4">uarReadH</a>
+        3.8.5   <a href="#3.8.5">uarEOF</a>
+        3.8.6   <a href="#3.8.6">uarPos</a>
+        3.8.7   <a href="#3.8.7">uarSize</a>
+        3.8.8   <a href="#3.8.8">uarSeek</a>
+        3.8.9   <a href="#3.8.9">uarbOpen</a>
+        3.8.10  <a href="#3.8.10">uarbClose</a>
+        3.8.11  <a href="#3.8.11">uarbRead</a>
+        3.8.12  <a href="#3.8.12">uarbEOF</a>
+        3.8.13  <a href="#3.8.13">uarbPos</a>
+        3.8.14  <a href="#3.8.14">uarbSize</a>
+        3.8.15  <a href="#3.8.15">uarbSeek</a>
+        3.8.16  <a href="#3.8.16">uarFileFind</a>
+        3.8.17  <a href="#3.8.17">uarFileSeek</a>
+        3.8.18  <a href="#3.8.18">uarFileExtract</a>
+        3.8.19  <a href="#3.8.19">uarFileAdd</a>
+        3.8.20  <a href="#3.8.20">uarFileDel</a>
+        3.8.21  <a href="#3.8.21">uarCreate</a>
+        
+    3.9 Dos
+        3.9.1   <a href="#3.9.1">bfileOpen</a>
+        3.9.2   <a href="#3.9.2">bfileClose</a>
+        3.9.3   <a href="#3.9.3">bfileBegin</a>
+        3.9.4   <a href="#3.9.4">bfileEnd</a>
+        3.9.5   <a href="#3.9.5">bfileRead</a>
+        3.9.6   <a href="#3.9.6">bfileRead1</a>
+        3.9.7   <a href="#3.9.7">bfileRead2</a>
+        3.9.8   <a href="#3.9.8">bfileRead4</a>
+        3.9.9   <a href="#3.9.9">bfileWrite</a>
+        3.9.10  <a href="#3.9.10">bfileWrite1</a>
+        3.9.11  <a href="#3.9.11">bfileWrite2</a>
+        3.9.12  <a href="#3.9.12">bfileWrite4</a>
+        3.9.13  <a href="#3.9.13">bfileEOF</a>
+        3.9.14  <a href="#3.9.14">bfilePos</a>
+        3.9.15  <a href="#3.9.15">bfileSize</a>
+        3.9.16  <a href="#3.9.16">bfileSeek</a>
+        3.9.17  <a href="#3.9.17">fileOpen</a>
+        3.9.18  <a href="#3.9.18">fileClose</a>
+        3.9.19  <a href="#3.9.19">fileRead</a>
+        3.9.20  <a href="#3.9.20">fileWrite</a>
+        3.9.21  <a href="#3.9.21">fileEOF</a>
+        3.9.22  <a href="#3.9.22">filePos</a>
+        3.9.23  <a href="#3.9.23">fileSize</a>
+        3.9.24  <a href="#3.9.24">fileSeek</a>
+        3.9.25  <a href="#3.9.25">memAlloc</a>
+        3.9.26  <a href="#3.9.26">memAvail</a>
+        3.9.27  <a href="#3.9.27">memCAlloc</a>
+        3.9.28  <a href="#3.9.28">memFree</a>
+        3.9.29  <a href="#3.9.29">memFill</a>
+        3.9.30  <a href="#3.9.29">memFill</a>
+        3.9.31  <a href="#3.9.29">memFillEx</a>
+        3.9.32  <a href="#3.9.29">memCopy</a>
+        3.9.33  <a href="#3.9.29">memCopyEx</a>
+
+    3.10 Ems
+        3.10.1  <a href="#3.10.1">emsAlloc</a>
+        3.10.1  <a href="#3.10.2">emsCalloc</a>
+        3.10.2  <a href="#3.10.3">emsAvail</a>
+        3.10.3  <a href="#3.10.4">emsFree</a>
+        3.10.4  <a href="#3.10.5">emsMap</a>
+        3.10.5  <a href="#3.10.6">emsSave</a>
+        3.10.7  <a href="#3.10.7">emsRestore</a>
+        3.10.8  <a href="#3.10.8">emsCheck</a>
+               
+
+    
+ 
+ 
+<a name="1.1.1"></a>
+====================================
+1.1.1 - The difference between debug
+        and release builds
+====================================
+
+    The debug build of the library is for the development period of
+    your program while the release build should only be used when you're
+    compiling the release version of your program. The debug build has
+    crash protection, it doesn't crash by incorrect use of µGL and helps
+    you find bugs. It does so by logging its startup and shutdown activity
+    in a log file called ugl.log. It also reports incorrect use of the
+    routines. Of course, we can't guarantee that µGL will never crash with
+    the debug builds. But we can guarantee that it will be very stable. It
+    is strongly recommended that the debug builds are always used in the
+    IDE and during development. It doesn't give any worse performance except
+    when an error is detected. And then only for a very short period of time.
+    This is because it has to log the error, and writing to the log means
+    disk access.
+
+    The release build should only be used for the release version of your
+    program because it doesn't use any sort of checking at all. Thus you
+    have to had eliminated all the errors that are reported in ugl.log by
+    the debug build of µGL. It does offer a slight increase in performance
+    and is smaller in size.
+
+
+<a name="1.1.2"></a>
+====================================
+   1.1.2 - How to load µGL
+====================================
+
+    When you unpack the library you will see a directory called lib.
+    Under this directory you have two sub directories, debug and release.
+    And under each of those you have three sub directories called qb,
+    pds, vbd and bc. The depending on what compiler you're using copy the
+    files under the sub directory from both debug and release to the library
+    directory of qb/pds/vbdos/bc. If you don't have a library directory and
+    everything is just under one directory then simply copy the files to
+    that directory. Then copy the files in the bi directory to the include
+    directory for qb, or if all files are just stored in the main qb
+    directory simply copy it over. Now, to load up the library you have to
+    type this:
+
+    QB debug:           qb /Lugld 
+    QB release:         qb /Lugl
+    PDS debug:          qbx /Es /Luglpd 
+    PDS release:        qbx /Es /Luglp 
+    VBDos debug:        vbdos /Es /Luglvd 
+    VBDos release:      vbdos /Es /Luglv 
+ 
+     
+<a name="1.1.3"></a>
+====================================
+   1.1.3 - The .bi/.h file including order
+====================================
+
+    There's some dependency in the header files, if a header file is 
+    dependent of any other, you need to include them in the order they
+    are listed before you include the header file you want.
+    
+    name                dependency    
+    -------             ----------
+    ugl.bi              none
+    
+    kbd.bi              none
+    
+    mouse.bi            none
+    
+    tmr.bi              none
+    
+    uglu.bi             none    
+    
+    font.bi             none
+    
+    ems.bi              none
+    
+    dos.bi              none    
+    
+    arch.bi             dos.bi
+    
+    snd.bi              dos.bi
+                        arch.bi
+                        
+    mod.bi              dos.bi
+                        arch.bi
+                        snd.bi
+                        
+    
+    So if you wanted to include them all, this would be the order.
+    
+    ugl.bi
+    kbd.bi
+    mouse.bi
+    tmr.bi
+    uglu.bi
+    font.bi
+    ems.bi
+    dos.bi    
+    arch.bi
+    snd.bi
+    mod.bi    
+
+
+<a name="1.1.4"></a>
+====================================
+   1.1.4 - What is a handle? 
+====================================
+
+    A handle is an alias for something. In µGL handles are used quite a
+    bit to keep you from messing with things you're not suppose to mess
+    with. The handles returned by µGL are only known by guess what, µGL.
+    A handle is always 32 bits, therefore you always have to declare
+    handles as LONG. If you forget and declare it as integer or any other
+    type that is less then 32 bits the handle will be lost and if you're
+    using the release build there will be a crash when you attempt to use
+    the handle. In the debug build it will just be logged.
+
+
+<a name="1.1.5"></a>
+====================================
+   1.1.5 - What is a DC?
+====================================
+
+    A DC is short for Device Context, a concept borrowed from windows.
+    A DC is a surface for storing image/sprites/textures. It's similar
+    to the array you create to hold a sprite that you want to GET or PUT
+    in QB/VBDOS.
+
+
+<a name="1.1.6"></a>
+====================================
+   1.1.6 - What's so special about them?
+====================================
+
+    You never have to worry about low-level things such as how to allocate
+    a DC for a certain memory type, you don't have to allocate it yourself
+    and you refer to it only by its handle. You just have to tell µGL what
+    resolutions and bit depth it should have. To µGL all DC's are the same.
+    It doesn't matter if it's the Video DC, Conventional memory DC or an
+    EMS DC. All µGL routines accept any DC as its destination or source.
+    So you never have to write one line of code different because you want
+    to use some other kind of memory to store your sprite.
+
+
+<a name="1.1.7"></a>
+====================================
+   1.1.7 - Initializing µGL 
+====================================
+
+    To Initializing µGL we have to call uglInit. uglInit returns True (-1)
+    if it was successful and False (0) if it wasn't. Example:
+
+    if not uglInit then 
+        print "Error: Could not Init µGL" 
+        end 
+    end if
+
+
+<a name="1.1.8"></a>
+====================================
+   1.1.8 - Setting up the video mode 
+====================================
+
+
+    To set the video mode we need to use the function uglSetVideoDC.
+    It returns a handle to the video if it was successful and if not
+    it returns False. Its in parameters are format, xRes, yRes and
+    Pages. Format can be UGL.8BIT, UGL.15BIT, UGL.16BIT and UGL.32BIT
+    for 8, 15, 16 or 32 bit mode. xRes is the desired x resolution of
+    the mode you want yRes is the desired y resolution of the mode you
+    want pages are the number of pages you want.
+    Example:
+
+    defint a-z 
+    '$include: 'ugl.bi' 
+    
+    '' Create a handle holder 
+    dim videoHandle as long
+
+    '' Init ugl 
+    if not uglInit then 
+        print "Error: Could not Initializing µGL" 
+        end 
+    end if
+
+    '' Set mode 640x480x16 with 1 page 
+    videoHandle = uglSetVideoDC(UGL.16BIT, 640, 480, 1) 
+    if videoHandle = False then 
+        print "Error: Could not set the video mode" 
+        uglEnd 
+    end if
+
+    '' It succeeded 
+    '' Now to reset ugl and set the video mode back 
+    '' to what it was before we changed it 
+    '' uglRestore restores the video mode 
+    '' uglEnd resets ugl, don't forget to call it 
+    '' when you're in the IDE 
+    uglRestore 
+    uglEnd
+
+<a name="1.1.9"></a>
+====================================
+   1.1.9 - Creating a new DC 
+====================================
+
+
+    One of the things i particularly like about µGL is the DC system.
+    It makes everything so much simpler for the programmer and at a
+    low level it enables more efficient handling of Bank/EMS/Segments.
+    To µGL all DCs are the same, this means that unlike other libraries
+    that are available for qb you don't need to handle a sprite stored
+    in ems any differently then one stored in conventional memory. You
+    can use the same routines on all kind of DCs. Now, let's get to how
+    to actually create one. You need to know a few things, like how big
+    it should be, where you want it etc. Using the uglNew you can allocate
+    it in either conventional memory or ems by setting the typ argument to
+    either UGL.MEM or UGL.EMS. The fmt argument tells is what bitdepth it
+    should have (UGL.8BIT, UGL.15BIT, UGL.16BIT, UGL.32BIT) and the xRes
+    and yRes arguments tell the routine what dimensions it should have.
+    So let's say we want to create a DC that is 320 pixels wide, 240 pixels
+    high, has bit depth of 8 (256 colors) and is allocated in conventional
+    memory. Here is what the code could look like:
+
+    defint a-z
+    '$include: 'ugl.bi'
+
+    const xRes = 320
+    const yRes = 240
+    const bpp  = UGL.8BIT
+
+    '' Create a 32 bit variable to store
+    '' it's handle
+    dim MyDC as long
+
+    '' Now attempt to allocate the DC
+    MyDC = uglNew(UGL.MEM, bpp, xRes, yRes)
+
+    '' Now we have to check it could be
+    '' allocated or not. This is done by
+    '' checking if the handle is false or
+    '' zero.
+    if MyDC = False then
+        print "Error!: Could not allocate DC"
+        end
+    end if
+
+
+<a name="1.1.10"></a>
+====================================
+   1.1.10 - Using basic primitives 
+====================================
+
+
+    The most basic drawing primitives of ugl include line, pset, and circle.
+    They all require a DC to draw to, which can be a video DC or a memory DC,
+    They all can draw in any bit depth, and in any screen resolution.
+    Here is an example to show you how to set the screen and use the drawing
+    Primitives on the screen:
+
+    defint a-z
+    '$include: 'ugl.bi'
+
+    const xRes = 320
+    const yRes = 240
+    const bpp  = UGL.8BIT
+
+    '' Initialize
+    if not uglInit then
+        print "Error!: Could not initialize library!"
+        end
+    end if
+
+    '' Create a variable to store the video DC
+    dim video as long
+
+    '' Now attempt to set the screen mode with one video page
+    video = uglSetVideoDC(bpp, xRes, yRes, 1)
+    if video = 0 then 
+        print "Error!: Could not set screen mode!"
+        end
+    end if
+
+    '' uglColors gives us the biggest color value 
+    '' for the bitdepth bpp
+    colors& = uglColors(bpp)
+
+    do
+        for i = 1 to 100
+            uglPset video, rnd * xRes, rnd * yRes, rnd * colors&
+            uglLine video, rnd * xRes, rnd * yRes, rnd * xRes, rnd * yRes,_
+                           rnd * colors&
+
+            uglCircle video, rnd * xRes, rnd * yRes, rnd * 100, rnd * colors&
+        next i
+    loop while inkey$ = ""
+
+    ''Close down library
+    uglRestore
+    uglEnd
+    end
+
+
+<a name="1.1.11"></a>
+====================================
+   1.1.11 - Using uglGet and uglPut 
+====================================
+
+    This is probably the routines you use most.
+    They both require a DC to draw to/get from, which can be
+    a video DC or a memory DC, plus a DC for itself to read
+    from/wite to. They can only draw/get in the bit depth their
+    own DC is, but in any screen resolution.
+    Here is an example to show you how to set the screen and use
+    the blitting on the screen:
+    
+    defint a-z
+    '$include: 'ugl.bi'
+
+    const xRes = 320
+    const yRes = 240
+    const bpp  = UGL.8BIT
+
+    '' Initialize
+    if not uglInit then
+        print "Error!: Could not initialize library!"
+        end
+    end if
+
+    '' Create a 32 bit variables to store
+    '' the handles
+    dim MyDC as long
+    dim video as long
+
+
+    '' Now attempt to set the screen mode with one video page
+    video = uglSetVideoDC(bpp, xRes, yRes, 1)
+    if video = False then 
+        print "Error!: Could not set screen mode"
+        end
+    end if
+
+    '' Now attempt to allocate the DC
+    MyDC = uglNew(UGL.MEM, bpp, 10, 10)
+
+    '' Now we have to check if it could be
+    '' allocated or not. This is done by
+    '' checking if the handle is false (zero).
+    if MyDC = False then
+        print "Error!: Could not allocate DC"
+        end
+    end if
+
+    '' Make some random graphics on a 10x10 field
+    for i = 1 to 100
+        uglPset video, rnd * 10, rnd * yRes, i
+    next i
+    
+    '' Get the 10x10 field into MyDC.
+    '' We don't need to specify the ending coordinats,
+    '' as the DC has a defined with already.
+    uglGet video, 0, 0, MyDC
+
+    '' Blit (put) the sprite from MyDC to the
+    '' screen at random coordinates
+    do
+        uglPut video, rnd * xRes, rnd * yRes, MyDC
+    loop while inkey$ = ""
+
+    ''Close down library
+    uglRestore
+    uglEnd
+
+<a name="1.1.12"></a>
+====================================
+   1.1.12  What's UAR and how do i use it?
+====================================
+
+    UAR stands for µGL Archive, it's an archive system that is tightly
+    interigated with µGL. It's purpose is to put many files into one and
+    be able to access that one file as if it was a complete filesystem.
+    So in other words an UAR is like a TAR/ZIP/RAR file. UAR works in 
+    layers. In the bottom layer you'll find the actual driver which creates,
+    reads and writes to a specific archive format. And in the top layer 
+    you'll find a sort of a wrapper which gives you an interface that enables
+    you to access any file in an archive as if it was an ordinary file. 
+    Currently the bottom layer is for Quake I/II PAK archives, this format
+    is very simple and does not use compression. But becuase there is
+    already a great tool for creating and modifying PAK archives (PAKExplorer
+    can be found under tools\pakexplr) we decided that's the format we'll
+    use for now. The great thing about UAR is that any routine in µGL which
+    loads files can load files from an UAR without having to change a line
+    code. For instance if i were loading a bmp like this
+    
+    bmp = uglNewBMP(UGL.EMS, UGL.16BIT, "gfx\characters\mario.bmp")
+    
+    and later decide that i don't want million files lying around and
+    put the bmp in a pak file i would load it like this
+    
+    bmp = uglNewBMP(UGL.EMS, UGL.16BIT, "gfx\gfx.pak::characters/mario.bmp")
+    
+    uglNewBMP will know that the bmp is in the pak file gfx.pak and under
+    the directory characters and will load it directly from there.
+    If you want to directly access files in a UAR check out section 
+    3.2 UAR - µGL Archive. There you'll find routines that are similar to
+    qb's and C's file routines.  
+
+
+<a name="1.1.13"></a>
+====================================    
+    1.1.13  What's the difference between UBF and UVF fonts?      
+====================================
+    
+    µGL has two type of fonts. UBF and UVF fonts, UBF 
+    stands for "µGL Bitmap Font" and UVF stands for
+    "µGL Vector Font". 
+    
+    UBF fonts are as the name says, bitmap fonts. They
+    are loaded and used just like UVF fonts. The difference
+    is that they're bitmaps, images. They're faster to render but
+    get blocky when they're scaled and rotated. Since UVF fonts
+    don't look all that good when they're small its recomended to
+    use UBF fonts where small fonts are needed. For the time being
+    there is no UBF support in ugl. But in the future you'll be 
+    able to convert windows fonts with TTF2UVF (should change that 
+    name) to UBF and load them up in µGL jus as you do with UVF ones.
+    
+    UVF fonts are Vector fonts. They're like the ttf fonts in windows
+    and we made infact a little utility to convert windows ttf fonts
+    to UVF ones. There are both advantages and disadvantages with UVF.
+    UVF fonts look smooth even when you scale and rotate them, but
+    they don't look very well when they're small and are slow to render.
+    
+    To use UVF fonts you'll have to convert the ttf font you like to
+    UVF with a utility called TTF2UVF which you will find under 
+    tools/ttf2uvf. This utility needs the MFC runtimes which you can
+    download from <a href="ttp://www.winsite.com/bin/Info?500000031712">http://www.winsite.com/bin/Info?500000031712</a>. Once
+    you've converted the TTF font load it up in µGL and it'll do the
+    rest.
+    
+    
+    
+<a name="1.1.14"></a>
+====================================    
+    1.1.14  Version history
+====================================
+.....
+build 0.23b
+    Added:
+        - Added a perspective correct tmapper!!!
+          Yeah!! It's around 20% slower then the affine mapper
+          on my athlon. So it's not that bad. I still have more
+          optimisations to do though. Migh be able to crank up
+          the performance another 5-10%. Right now i'm just happy
+          that it works. It was a bitch to code in asm. Intel sucks,
+          bigtime.
+          
+          This one is for my beautiful girlfriend, you're the
+          greatest babe. And Siouxsie for keeping me entertained 
+          during the 4 days i sat behind the computer 24/7. And
+          no thx to v1ctor who keept bitching that you can't clip
+          z in screen space. Sure you can't, but did you listen when
+          i told you that 1/z u/z and v/z is linear in screen space?
+          Nope, you didn't. Where is that brasilian butthole anyways?
+          I haven't seen him around for ages.
+          
+          You might wonder, do you have a life? The answer is, nope. I
+          gave it up to code the perspective mapper. I quit half my 
+          classes. Haven't been to class for over a week now. As if
+          it wasn't bad enough before. What can i say? I'm a sucker
+          for coding for outdated stuff.
+              
+        - uglTriG now supports linear palettes in 8 bit mode.
+          Use uglPalUsingLin to switch between 332 and linear palette
+          modes.
+          
+    Fixed:
+        - uglSetVideoDC would fail if calling it after uglRestore if 
+          the resolution was same as before. 
+        
+        - The library builder wouldn't build, reporting that atleast
+          one bpp has to be selected when you had selected just 8 bit.
+
+          
+    Changes:
+        - Mod player now supports vibrato, tremolo and arpegio.
+          I'm still not completly happy with the mod player.
+    
+        - Sutherland-Hodgman clipping is now split up into several 
+          files becuase of two reasons. The major reason is size. 
+          The module when assembled was 16 kb. And if you use any 
+          of the convex polygon routines you had to include all of
+          those 16 kbs. It now works much smarter, including only
+          what's needed. The second reason for splitting it up into
+          more files is for simplecity, a new set of routines are
+          coming up, can you guess what they are? No? Perspective
+          correct texturemapping and eventually gouruad. Neatooo.
+          
+          
+.....
+build 0.22a
+    Added:
+        - A mod player. Yepp, you read correctly. However, as 
+          it's summer i'm not going to waste time coding. So
+          vibrato, tremolo and arpegio aren't implemented. 
+          But other then that it works perfect.
+          
+.....
+build 0.21d
+    Added:
+        - snd.h, the C header for the sound module. 
+          Forgot to add that before, sorry guys.
+    
+        - palette.bas, an example on how to use the
+          palette.
+          
+    Fixed:
+        - Fixed a bug in uglPalGet and uglPalGetBuff
+    
+        - ugl.bi and snd.bi, there was some missdeclarations
+          there. Blame that lazy son of a gun v1ctor, he never
+          tests anything he codes! %#&
+
+
+.....
+build 0.21c
+    Added:
+        - The ability to add your own objs/libs to the builder.
+
+    Fixed:
+        - A few bugs in the library builder
+    
+        - A bug in the sound module which caused it not to use the
+          beats per second setting.
+          
+.....
+build 0.21b
+    Added:
+        - sound module! yeah babe, did you hear that? sound!
+
+        - ems save & restore, context saving stuff for use on ISR's
+
+    Fixed:
+        - Updated a manual a bit, still not 100% complete though
+        
+        - ems mapping was buggy, was always starting the map at lpage 0.
+          now multiple page mapping is used too, should be much faster if
+          mapping more than one page at time
+
+        - pget had a bug! omfg, can you believe that? are we lazy c0derz
+          or what? :P
+
+        - a bunch of things i didn't document and that i don't remember now!
+          note to self: change logs must be updated or they are otherwise
+          pretty much useless [period]
+
+.....
+build 0.20c
+
+    Fixed:
+        - A bug in the memory allocation routine made it impossible to even
+          init the lib. Seems to be fixed now. Though noone complained, i guess
+          noone tried 0.20b :p
+
+.....
+build 0.20b
+    Added:
+        - palette set/get/load functions, don't expect routines that need
+          a 332 (rgb) fixed palette to work, they won't :P
+
+        - uglNewEx/PutBMPEx routines, added options to not convert to 332
+          palette when loading 8-bit BMPs and to do masking (setting a
+          mask value for 8-bit bitmaps)
+
+        - uglRowWriteEx & uglPutMskConv, can do masking now when converting 
+          between DCs with different bpp's
+
+    Fixed:
+        - tmapper crashing 'cause too tiny polygons
+
+        - tri/quad not filling the whole destine dc (last col and row)
+
+        - uglDCAccess# routines had stupid and er, invisible, er bugs...
+
+        - mouseCursor will handle the conversion from cursors of lower
+          bpp's to higher ones (no mask will be lost)
+
+.....
+build 0.19b
+    Added:
+        - support for Borland/Turbo C/C++ real-mode compiler (medium memory
+          model), including libs (both for release and debug modes), headers
+          and some examples (headers are probably compatible with M$-C/QuickC
+          and Watcom-C compilers, but calls to non ansi-c functions like
+          farmalloc, farfree and farcoreleft are done, that may be a problem
+          with other C real-mode DOS compilers than BC).
+
+        - DOS memory allocation strategy is changed to include UMBs in the
+          DOS memory chain (not when NT is detected, seems like adding
+          UMBs doesn't work right in NT DOS boxes; can give up to 100K of
+          memory depending on OS, EMS manager and TSRs loaded)
+
+        - uglDCAccessRd, uglDCAccessWr and uglDCAccessRdWr functions, for
+          direct DC frame-buffer access (warning: seem to not work in
+          QB/PDS/VBD probably 'cause yet-another-QB-bug; when used in C,
+          all seems fine)
+
+    Fixed:
+        - no more holes between triangles/quadrangles when using uglTri# and
+          uglQuad# routines
+
+        - tmapper (TriT/QuadT) no more crashes when handling too tiny polys
+
+        - no more crashes when there isn't EMS or VESA support
+
+        - vga mode 13h will always be used if setting 320x200x8 + 1 page
+
+.....
+build 0.18b
+    Added:
+        - uglPutRot, uglPutScl, uglPutRotScl,
+          uglPutMskRot, uglPutMskScl, uglPutMskRotScl
+
+        - uglTriF, uglTriG, uglTriT, uglQuadF, uglQuadT
+          
+        - 4-bit RLE support for uglNewBMP and uglPutBMP routines
+
+        - AUTOINIT operation mode for timers
+
+.....
+build 0.17b
+    Note:    
+        - There's a problem with Viper III cards, all modes but 320x200x8
+          and 320x240x8 work. It's seems that this is a hardware problem.
+          When trying to change the bytes per scanline in these modes the 
+          computer hangs. This was partially fixed by not changing bytes
+          per scanline in 320x200x8 since it's under 64 KB anyway. But for 
+          320x240x8 more testing is needed to find the exact problem, if 
+          this is a hardware problem there is nothing we can do. If you 
+          have a Viper III and have this problem you should try the univbe
+          driver or a firmware update.
+
+    Changed:
+        - all routines for direct access to archives (Quake I/II's PAK)
+          are now at arch module (protos at bi/arch.bi include file)
+
+        - all routines that load files (ie: fontLoad, uglNewBMP, uglPutBMP)
+          now support archives directly
+
+        - no more limits on number of files on an archive when using
+          the uarFileAdd and uarFileDel routines (the recommendation to 
+          use an extern tool (ie, PAKExplorer) to change/update your 
+          archives still applying, as no temp file is used, if any error 
+          occur while updating the archives, the archive would be 
+          inaccessible next time you 'd try loading files from it;
+          resuming: if you do some mistake using the Add and/or Del 
+          routines and your archive get screwed and somehow you don't have
+          backups of the files that were added to it... don't blame us :P;
+          use the uarCreate, uarFileAdd and uarFileDel routines with care!)
+
+.....
+build 0.16a
+    Added:
+        - Ported PAK routines from C to assembly to get the size down. 
+          Didn't make allot of difference but it's 50% smaller now
+
+        - Quake I/II PAK archive routines added: 
+            ugluFindFile, ugluExtractFile, ugluExtractFileEx
+            ugluAddFile, ugluAddFileEx, ugluDelFile, ugluCreate
+
+        - uglEllipse and uglEllipseF: unfilled and filled ellipses drawing
+          routines
+
+    Fixed:
+        - uglCubicBez now draws correctly for levels above 16
+
+    Note: 
+        - I would recomend you to only use Find and Extract routines 
+          because AddFile and DelFile loads the whole PAK archive
+          "FAT" into memory. Thus the "FAT" can't be bigger then 64 KB
+          which is about 1024 files. So use Pak Explorer for 
+          creation and maintanence of the archives and ugl's 
+          routines for reading.
+
+.....
+build 0.15a
+    Added:
+        - uglPutFlip and uglPutMskFlip: horizontally and/or vertically
+          flipped bitmaps/sprites blting
+
+        - documentation for the font module, the module stills not
+          complete (ie, fontPrint and fontDraw routines aren't yet
+          finished and there's no bitmapped font support), but for
+          UVF (vector fonts) and printing a line at time, it's working
+          fine (until some beta-tester find some nasty bug on it :D)
+
+    Changed:
+        - a "smarter" building system: after hours trying to get m$ make 
+          utility (nmake) to work (it's too dumb to understand that when
+          you define a dir to where search for dependencies, that means
+          _all_ dependencies are assumed to be there, not only the first
+          one in the list... grr!!!) and having no luck with borland's
+          make (it's not so stupid as m$ ones, tho, there is a bug with
+          the partial-filename macros when the ! command modifier is used
+          that makes it useless... grr^2), i (v1ctor) decided to try another
+          make tool: DMAKE, that is a bit more difficult to setup and to
+          convert/port to (it's like 10% m$' make-file compatible) but that
+          can do the work fine (win32 gnu-make 'd work nicelly, tho... bah...
+          too lazy to read more 500K of docs :P)... obs: dmake 4.1 is case-
+          sensitive and as LINK & LIB 16-bit don't (and cause the way used 
+          to build the lib based on make-files' names), the make-files names 
+          have to be UPPERCASE (with the `mk' extension in lowercase), or 
+          the build will fail (all the rest, obj/asm/inc files plus dirs, 
+          must be in lowercase).
+
+.....
+build 0.14a
+    Added:
+        - 4 new routines for curves added: uglQuadricBez, ugluQuadricBez,
+          ugluQuadricBez3D and ugluCubicBez3D.
+
+        - uglPolyPoly and uglPolyPolyF for draw multiple polygons at the
+          same call plus uglPoly: same as uglPolyF but draws only the
+          polygon's outlines.
+
+.....
+build 0.13a
+    Changed:
+        - The uglBox and uglBoxF routines are now called uglRect and 
+          uglRectF as we "found" `rectangle' a bit more clear than 'box',
+          sorry :P.
+        
+        - Surprise, the set clipping area function also changed (both name
+          and parameters) and there's now one to get the clipping rectangle 
+          and set plus get the current one (uglSetClipRect, uglGetClipRect 
+          and guess what... uglGetSetClipRect! :P), sorry again (that's 
+          what you get by beta-testing :D).
+          
+    Added:
+        - Logging for visual/working page setting routines
+
+
+.....
+build 0.12a
+    Added:
+        - By request we added more logging to µGL. So now when some routine 
+          detects an invalid DC it logs that. This'll look like:
+
+          uglClear: Invalid DC
+          uglPut: Invalid src DC
+        
+          This is somewhat slower because of disk access, but it's only for
+          the debug versions and when an error occurs. 
+
+
+.....
+build 0.11a
+    Added:
+        - We noticed people making mistakes like sending an invalid DC to 
+          some routines which made their programs crashed. So we decided to 
+          "fix" that. The debug versions of the lib is now very safe and 
+          pretty much impossible to crash (by the user, that is). So, our 
+          tip is to use the debug libs in the IDE during development and use
+          the release when you're about to make a public release. But don't 
+          be surprised if your program worked perfect with the debug libs
+          since the start and now all the suddenly crashes when you use the
+          release version. So be sure to fix any bugs you have immediately
+          so you don't have 10K bugs to fix just before you planned to
+          release your game or whatever.
+
+    Fixed:
+        - The 332 palette used in 8-bit video modes is now more accurate.
+
+
+.....
+build 0.10a
+    Fixed:
+        - The problem with Voodoo cards and win2k is fixed. Even though 
+          this had nothing to do with µGL we decided that we needed to do
+          something about it. So you can use mode 320x200x8 with voodoo
+          cards, it can only have one page. In other words:
+          uglSetVideoDC(UGL.8BIT, 320, 200, 1). 
+
+
+.....
+build 0.09a 
+    Added:
+        - There are now debug versions of the lib. If you look under the 
+          directory lib you'll see that there are two directories, debug and 
+          release. And under them you have sub directories called qb4x, qb7x 
+          and vb1x. The debug versions of the library create a log file 
+          called ugl.log where you can exactly see where an error occurred. 
+          So when you post a bug report don't forget to include ugl.log
+
+
+
+
+
+<a name="1.2.1"></a>
+======================================================
+  1.2.1 - Compability issues
+======================================================
+
+    Unfortuneatly, there are a lot of issues with VESA. Just becuase it says
+    "VESA compatible" on your videocard box doesn't mean that it really is 
+    100% VESA compatible. Infact most of the time it isn't. Most video cards
+    do not support the service for changing the scanline width which is 
+    essential to µGL. 
+    
+    Sometimes the VESA problem is just a driver issue and will go away if
+    you boot directly into dos, and sometimes it's a hardware issue.
+    
+    Either way, you should never expect a certain video mode to be available
+    on any one computer that someone might have. This is actually a basic
+    element of programming, you can never assume anything. Your program has
+    to be ready to handle any issue that might occur.
+    
+    There are several things you could do. But in order to be succesful
+    at coding compatible programs there's one thing you need to always 
+    remember, You can never assume anything!
+    
+    
+    
+<a name="1.2.2"></a>
+======================================================
+  1.2.2 - How to assure video compability
+======================================================
+    
+    Let's start with video modes. If your program only runs in 640x480x16,
+    you can be sure that it won't run on many computers. But if you give 
+    the user the choice to choose the video mode you have made sure that 
+    it will run in atleast one of those video modes. 
+    
+    However, there is one video mode that will always run, no matter what.
+    This is <b>320x200x8 with only ONE video page</b>. When you set this mode µGL
+    doesn't use VESA at all, it uses good old VGA mode 13h which will work
+    on any video card since the mid eighties. So always give the user the
+    choice to set that mode, if you do so you can be 110% sure that you 
+    program will run on any pc compatible computer out there.    
+    
+    
+    
+<a name="1.2.3"></a>
+======================================================
+  1.2.3 - How to assure audio compability
+======================================================
+
+    Now, moving on to sound. Getting sound to work is easier. Sound blasters
+    and compatibles are very stable. Thy can be divided into four groups
+    
+        + Sound Blaster ( 1.0 )
+            8 bit, mono, 4000Hz-23000Hz
+            
+        + Sound Blaster Pro ( 2.0 )
+            8 bit, mono, 4000Hz-44100Hz
+            
+        + Sound Blaster Pro ( 2.01 )
+            8 bit, mono, 4000Hz-44100Hz
+            8 bit, stereo, 11025Hz-22050Hz            
+            
+        + Sound Blaster 16 ( 3.0 )
+            8/16 bit, mono/stereo, 5000Hz-44100Hz
+            
+    Each one is 100% backward compatible with the previous one(s). The best way
+    to to make sure that sound works is to fall back on a previous SB mode if 
+    the one you tried to set failed. Here's what I do, and it always works    
+
+    if ( sndOpenOutput( snd.s16.stereo, 44100, 50 ) = false ) then
+        if ( sndOpenOutput( snd.s8.stereo, 22050, 50 ) = false ) then
+            if ( sndOpenOutput( snd.s8.mono, 22050, 50 ) = false ) then
+                ExitError "0x0003, Could not open sound output..."
+            end if
+        end If
+    end if       
+
+    
+    Some SB compatibles have driver issues which will make them act like they
+    are working in win9x dos boxes but will crash the OS. So to ensure that
+    our program works in a situation like this as well, you should give the 
+    user the choice to turn sound off completly. All you need to do is this
+    
+    if ( config.sound = true ) then
+        if ( sndOpenOutput( snd.s16.stereo, 44100, 50 ) = false ) then
+            if ( sndOpenOutput( snd.s8.stereo, 22050, 50 ) = false ) then
+                if ( sndOpenOutput( snd.s8.mono, 22050, 50 ) = false ) then
+                    ExitError "0x0003, Could not open sound output..."
+                end if
+            end If
+        end if
+    end if
+    
+    
+    And of course, NT/2K/XP/2K3 users should have VDM Sound up and running
+    if they want to get any sort of sound out of their machines. If you do
+    not know what VDM Sound is, read the readme file of µGL.
+    
+    
+    
+<a name="1.2.4"></a>
+======================================================
+  1.2.4 - EMS issues
+======================================================
+
+     Unfortuneatly there is nothing you as a programmer can do to assure ems 
+     compability. It will either work or not. 
+     
+     In windows me/nt/2k/xp/2k3 ems is by default disabled. So the user has 
+     to enable it. This is explained in the readme file of µGL. 
+     
+     If this doesn't work then it's probably a hardware issue. Some onboard
+     hardware uses the memory area used to map ems pages, thus ems is inaccesable.
+     
+     I have a asus motherboard with the nVidia nforce 2 chipset, i had to turn
+     the onboard ethernet controller of to get ems to work. What needs to be 
+     turned off is something that the user has to find out with trial and error.
+     
+     Sometimes there's nothing to do about it period, except maybe using virtual pc
+     or someother pc emulator.
+    
+    
+
+
+
+<a name="2.1.1"></a>
+======================================================
+  2.1.1 - uglInit
+======================================================
+
+    Prototype:    
+        declare function uglInit% ()
+
+    Arguments:
+        None
+    
+    Returns:    
+        True if initalization went ok, if not it returns False
+        
+    Description:
+        Inits the library, this routine Has to be called 
+        before anything else.
+
+    Example:
+        Any of the examples
+
+<a name="2.1.2"></a>
+======================================================
+  2.1.2 - uglEnd
+======================================================
+
+    Prototype:    
+        declare sub uglEnd ()
+
+    Arguments:
+        None
+    
+    Returns:    
+        Nothing
+        
+    Description:
+        Finalizes the library, has to be called when runing
+        directly from the IDE. Not needed when compiled.
+
+    Example:
+        Any of the examples
+
+
+<a name="2.1.3"></a>
+======================================================
+  2.1.3 - uglSetVideoDC
+====================================================== 
+
+    Prototype:    
+        declare function uglSetVideoDC& (byval fmt as integer, byval xRes as integer,_
+                                         byval yRes as integer, byval vidPages as integer)
+
+    Arguments:
+        [in] fmt                - Requested bitdepth UGL.8BIT,  UGL.15BIT
+                                                     UGL.16BIT, UGL.32BIT
+             xRes               - X Resolution
+             yRes               - Y Resolution
+         vidPages               - Reuested video pages, only relavent for
+                                  paging. Should be 1 if you're not going
+                                  to use paging.
+
+    Returns:    
+        The handle to the video DC if succesful, if not it 
+        returns False (zero).
+        
+    Description:
+        Sets the video in the requested mode if it's available.
+        Remember that all DC handles are of the type LONG.
+
+    Example:
+        Any of the examples
+
+        
+<a name="2.1.4"></a>
+======================================================
+   2.1.4 - uglGetVideoDC
+====================================================== 
+
+    Prototype:    
+        declare function uglGetVideoDC& ()
+
+    Arguments:
+        None
+      
+    Returns:    
+        The handle to the video DC if succesful, if not it 
+        returns False (zero).
+        
+    Description:
+        If you for some wierd reason that i can't imagine why, have
+        lost the handle to the video dc you can get it with this
+        function. assuming that there actually is one.
+        Remember that all DC handles are of the type LONG.
+
+    Example:
+        None
+
+    
+
+<a name="2.1.5"></a>
+======================================================
+   2.1.5 - uglGetClipRect    
+======================================================
+
+    Prototype:    
+        declare sub uglGetClipRect (byval dc as long, seg cr as CLIPRECT)
+
+    Arguments:
+        [in]  dc                - DC to set
+        [out] cr                - clipping rectangle
+
+    Returns:    
+        Nothing
+        
+    Description:
+        Gets the clipping boundries of the requested DC.
+
+    Example:
+        None
+        
+        
+<a name="2.1.6"></a>        
+======================================================
+   2.1.6 - uglSetClipRect   
+======================================================
+
+    Prototype:    
+        declare sub uglSetClipRect (byval dc as long, seg cr as CLIPRECT)
+
+    Arguments:
+        [in] dc                 - DC to set
+             cr                 - clipping rectangle, where:
+                                  xMin (>= 0; <= xMax)
+                                  yMin (>= 0; <= yMax)
+                                  xMax (>= xMin; < dc.xRes)
+                                  yMax (>= yMin; < dc.yRes)
+
+    Returns:    
+        Nothing
+        
+    Description:
+        Set the clipping boundries of the requested DC.
+
+    Example:
+        None        
+        
+        
+<a name="2.1.7"></a>
+======================================================
+   2.1.7 - uglGetSetClipRect   
+======================================================
+
+    Prototype:    
+        declare sub uglGetSetClipRect (byval dc as long, seg inCr as CLIPRECT,_
+                                       seg outCr as CLIPRECT)
+
+    Arguments:
+        [out] outCr             - Old Clipping rectangle
+        [in]  dc                - DC to set
+              inCr              - New clipping rectangle, where:
+                                  xMin (>= 0; <= xMax)
+                                  yMin (>= 0; <= yMax)
+                                  xMax (>= xMin; < dc.xRes)
+                                  yMax (>= yMin; < dc.yRes)
+
+    Returns:    
+        Nothing
+        
+    Description:
+        Get the old clipping rectangle and sets the
+        new one.
+
+    Example:
+        None                
+
+    
+<a name="2.1.8"></a>
+======================================================
+   2.1.8 - uglRestore        
+======================================================
+
+    Prototype:    
+        declare sub uglRestore ()
+
+    Arguments:
+        None
+    
+    Returns:    
+        Nothing
+        
+    Description:
+        Restores the video mode.
+
+    Example:
+        Any of the examples
+
+
+<a name="2.1.9"></a>
+======================================================
+   2.1.9 - uglNew           
+======================================================
+
+    Prototype:    
+        declare function uglNew& (byval typ as integer, byval fmt as integer,_
+                                  byval xRes as integer, byval yRes as integer)
+
+    Arguments:
+        [in]  typ               - DC Type, can be UGL.MEM or UGL.EMS
+              cfmt              - Bitdepth, can be UGL.8BIT,  UGL.15BIT
+                                                   UGL.16BIT, UGL.32BIT
+              xRes              - The Width of the DC  (> 0; <= 16384)
+              yRes              - The Height of the DC (> 0)
+    
+    Returns:    
+        The handle to the video DC if succesful, if not it 
+        returns False (zero).
+        
+    Description:
+        Allocates a new DC. The DC can be allocated in 
+        conventional memory where it can be up to 640 KB
+        or in EMS where it can be up to 4 MB. 
+        Remember that all DC handles are of the type LONG.
+    
+    Example:
+        offscr.bas
+        
+
+<a name="2.1.10"></a>
+======================================================
+   2.1.10 - uglNewMult      
+======================================================
+
+    Prototype:    
+        declare function uglNewMult% (dcArray() as long, byval dcs as integer,_
+                                      byval typ as integer, byval fmt as integer,_
+                                      byval xRes as integer, byval yRes as integer)
+
+    Arguments:
+         [out] dcArray          - Array to hold the pointers to the DCs
+         [in]  dcs              - Number of DCs to allocate
+               typ              - DC Type, can be UGL.MEM or UGL.EMS
+               fmt              - Bitdepth, can be UGL.8BIT,  UGL.15BIT
+                                                   UGL.16BIT, UGL.32BIT
+               xRes             - The Widths of the DCs  (> 0; <= 16384)
+               yRes             - The Heights of the DCs (> 0)
+          
+Returns:    
+    True if succesful, False if not
+    
+Description:
+    Like uglNew except it's allocates multiple DC's at
+    once and stores their handles in an array of the
+    type LONG. The array has to have as many elements
+    as the numbers of requested DCs.
+
+Example:
+    put.bas
+
+
+<a name="2.1.11"></a>
+======================================================
+2.1.11 - uglDel          
+======================================================
+
+Prototype:    
+    declare sub uglDel (seg dc as long)
+
+Arguments:
+     [in/out] dc            - Handle to DC to be freed
+          
+Returns:    
+    Nothing
+    
+Description:
+    Frees the memory allocated by a DC and sets the
+    handle to NULL. Worth to notice is that you don't
+    have to actually delete any of the DC's you create.
+    This is there only becuase you might be running out
+    memory and don't need a certain DC anymore.
+
+Example:
+    None
+
+
+
+<a name="2.1.12"></a>
+======================================================
+2.1.12 - uglDelMult      
+======================================================
+
+Prototype:    
+    declare sub uglDelMult (seg dcArray() as long)
+
+Arguments:
+     [in/out] dcArray()     - Array to the DCs
+          
+Returns:    
+    Nothing
+    
+Description:
+    Same as uglDel except it's for mulitple DCs. 
+    The first handle in the array will be set to NULL. 
+            
+Example:
+    None
+    
+
+
+
+<a name="2.2.1"></a>
+======================================================
+2.2.1 - uglRect      
+======================================================
+
+Prototype:    
+    declare sub uglRect (byval dc as long, byval x1 as integer,_
+                         byval y1 as integer, byval x2 as integer,_
+                         byval y2 as integer, byval clr as long)
+
+Arguments:
+     [in] dc                - Destination DC
+          x1                - Left X
+          y1                - Top Y
+          x2                - Right X
+          y2                - Bottom Y
+          clr               - Color
+          
+Returns:    
+    Nothing
+    
+Description:
+    Draws the outline of a rectangle on the requested DC
+            
+Example:
+    rect.bas
+    
+    
+<a name="2.2.2"></a>
+======================================================
+2.2.2 - uglRectF     
+======================================================
+
+Prototype:    
+    declare sub uglRectF (byval dc as long, byval x1 as integer,_
+                          byval y1 as integer, byval x2 as integer,_
+                          byval y2 as integer, byval clr as long)
+
+Arguments:
+     [in] dc                - Destination DC
+          x1                - Left X
+          y1                - Top Y
+          x2                - Right X
+          y2                - Bottom Y
+          clr               - Color
+          
+Returns:    
+    Nothing
+    
+Description:
+    Draws a filled rectangle on the requested DC
+            
+Example:
+    rectf.bas        
+    
+    
+<a name="2.2.3"></a>
+======================================================
+2.2.3 - uglCircle    
+======================================================
+
+Prototype:    
+    declare sub uglCircle (byval dc as long, byval cx as integer,_
+                           byval cy as integer, byval rad as integer,_
+                           byval clr as long)
+
+Arguments:
+     [in] dc                - Destination DC
+          cx                - Center, X coordinate
+          cy                - Center, Y coordinate
+          r                 - Radius
+          clr               - Color
+          
+Returns:    
+    Nothing
+    
+Description:
+    Draws the outline of a Circle on the requested DC
+            
+Example:
+    circle.bas
+    
+    
+<a name="2.2.4"></a>
+======================================================
+2.2.4 - uglCircleF   
+======================================================
+
+Prototype:    
+    declare sub uglCircleF (byval dc as long, byval cx as integer,_
+                            byval cy as integer, byval rad as integer,_
+                            byval clr as long)
+
+Arguments:
+     [in] dc                - Destination DC
+          cx                - Center, X coordinate
+          cy                - Center, Y coordinate
+          r                 - Radius
+          clr               - Color
+          
+Returns:    
+    Nothing
+    
+    Description:
+        Draws a filled Circle on the requested DC
+                
+    Example:
+        circlef.bas
+        
+        
+<a name="2.2.5"></a>
+======================================================
+   2.2.5 - uglClear      
+======================================================
+
+    Prototype:    
+        declare sub uglClear (byval dc as long, byval clr as long)
+
+    Arguments:
+         [in] dc                - Destination DC
+              clr               - Color
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Clears the requested DC with the desied color. Considers the
+        clipping rectange and pages.
+                
+    Example:
+        clear.bas
+        
+        
+<a name="2.2.6"></a>
+======================================================
+   2.2.6 - uglCubicBez
+======================================================
+
+    Prototype:    
+        declare sub uglCubicBez (byval dc as long, seg cbz as CUBICBEZ,_
+                                 byval levels as integer, byval clr as long)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             cbz                - The stucture containing the control 
+                                  points of the curve, 4 in this case
+             levels             - Level of detail
+             clr                - Color
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Draws a cubic bezier on the requested DC. Optimal level of 
+        detail is between 8-20.
+        Uses forward differencing + fixed point.
+                
+    Example:
+        cbez.bas
+        
+        
+<a name="2.2.7"></a>
+======================================================
+   2.2.7 - uglQuadricBez     
+======================================================
+
+    Prototype:    
+        declare sub uglQuadricBez (byval dc as long, seg qbz as QUADBEZ,_
+                                   byval levels as integer, byval clr as long)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             qbz                - The stucture containing the control 
+                                  points of the curve, 3 in this case
+             levels             - Level of detail
+             clr                - Color
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Draws a quadric bezier on the requested DC. Optimal level
+        of detail is between 8-20.
+        Uses forward differencing + fixed point.
+                
+    Example:
+        qbez.bas        
+        
+        
+<a name="2.2.8"></a>
+======================================================
+   2.2.8 - uglGet      
+======================================================
+
+    Prototype:    
+        declare sub uglGet (byval src as long, byval x as integer,_
+                            byval y as integer, byval dst as long)
+
+    Arguments:
+        [in]  src               - Source DC
+              x                 - Start X on source DC
+              y                 - Start Y on source DC
+              dst               - Destination DC
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Gets an image from the source DC onto the destination DC.
+        The size of the image is the same as the size of the 
+        destination DC. It starts getting from the cooridnates
+        x and y on the source DC. 
+                
+    Example:
+        None
+        
+                
+<a name="2.2.9"></a>
+======================================================
+   2.2.9 - uglPut      
+======================================================
+
+    Prototype:    
+        declare sub uglPut (byval dst as long, byval x as integer,_
+                            byval y as integer, byval src as long)
+
+    Arguments:
+        [in]  dst               - Destination DC
+              x                 - Start X on the destination DC
+              y                 - Start Y on the destination DC
+              src               - Source DC
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Blits (copies) the source DC onto the destination DC.
+        Starts at x and y on the destination DC.
+                
+    Example:
+        put.bas
+
+
+<a name="2.2.10"></a>
+======================================================
+   2.2.10 - uglPutMsk    
+======================================================
+
+    Prototype:    
+        declare sub uglPutMsk (byval dst as long, byval x as integer,_
+                               byval y as integer, byval src as long)
+
+    Arguments:
+        [in]  dst               - Destination DC
+              x                 - Start X on the destination DC
+              y                 - Start Y on the destination DC
+              src               - Source DC
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Same as uglPut except it does a transparent blit. Masks
+        out the RGB color (1.0, 0.0, 1.0).
+                    
+    Example:
+        putmsk.bas
+        
+        
+<a name="2.2.11"></a>
+======================================================
+   2.2.11 - uglHLine     
+======================================================
+
+    Prototype:    
+        declare sub uglHLine (byval dc as long, byval x1 as integer,_
+                              byval y as integer, byval x2 as integer,_
+                              byval clr as long)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             x1, y, x2          - Coordinates
+             clr                - Color
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Draws a horizontal line on the requested DC.
+                    
+    Example:
+        hline.bas
+        
+        
+<a name="2.2.12"></a>
+======================================================
+   2.2.12 - uglVLine     
+======================================================
+
+    Prototype:    
+        declare sub uglVLine (byval dc as long, byval x as integer,_
+                              byval y1 as integer, byval y2 as integer,_
+                              byval clr as long)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             x, y1, y2          - Coordinates
+             clr                - Color
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Draws a vertical line on the requested DC.
+                    
+    Example:
+        vline.bas
+        
+        
+<a name="2.2.13"></a>
+======================================================
+   2.2.13 - uglLine      
+======================================================
+
+    Prototype:    
+        declare sub uglLine (byval dc as long, byval x1 as integer,_
+                             byval y1 as integer, byval x2 as integer,_
+                             byval y2 as integer, byval clr as long)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             x1, y1, x2, y2     - Coordinates
+             clr                - Color
+              
+    Returns:    
+        Nothing
+        
+    Description:
+    Draws a line on the requested DC.
+                    
+    Example:
+        line.bas
+        
+        
+<a name="2.2.14"></a>
+======================================================
+   2.2.14 - uglPSet      
+======================================================
+
+    Prototype:    
+        declare sub uglPSet (byval dc as long, byval x as integer,_
+                             byval y as integer, byval clr as long)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             x, y               - Coorindates
+             clr                - Color
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Plots a pixel on the requested DC.
+                    
+    Example:
+        None
+        
+        
+<a name="2.2.15"></a>
+======================================================
+   2.2.15 - uglPGet      
+======================================================
+
+    Prototype:    
+        declare function uglPGet (byval dc as long, byval x as integer,_
+                                  byval y as integer)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             x, y               - Coorindates             
+              
+    Returns:    
+        The color value of the desired pixel
+        
+    Description:
+        Get the color of a certain pixel in a DC.
+                    
+    Example:
+        None
+        
+        
+<a name="2.2.16"></a>
+======================================================
+   2.2.16 - uglPoly      
+======================================================
+
+    Prototype:    
+        declare sub uglPoly (byval dc as long, seg pntArray as PNT2D,_
+                             byval points as integer, byval clr as long)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             pntArray           - An array of points that define the
+                                  polygon
+             points             - Number of points in the array
+             clr                - Color
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Draws the outline of a complex polygon on the
+        requested DC.
+                    
+    Example:
+        poly.bas
+        
+        
+<a name="2.2.17"></a>
+======================================================
+   2.2.17 - uglPolyF     
+======================================================
+
+    Prototype:    
+        declare sub uglPolyF (byval dc as long, seg pntArray as PNT2D,_
+                              byval points as integer, byval clr as long)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             pntArray           - An array of points that define the
+                                  polygon
+             points             - Number of points in the array
+             clr                - Color
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Same as uglPoly except it fills the polygon with a 
+        solid color.
+                    
+    Example:
+        polyf.bas
+        
+        
+<a name="2.2.18"></a>
+======================================================
+   2.2.18 - uglPolyPoly    
+======================================================
+
+    Prototype:    
+        declare sub uglPolyPoly (byval dc as long, seg pntArray as PNT2D,_
+                                 cntArray as PNT2D, byval polygons as integer,_
+                                 byval clr as long)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             pntArray           - Array of the type PNT2D where the points
+                                  for each polygon is stored
+             cntArray           - Array that describes how many points each
+                                  polygon has
+             polygons           - Tells the routine how many polygons 
+                                  there are
+             clr                - Color
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Draws the outlines of several complex polygons on
+        the requested DC. Yes, it's a stupid name :)
+                    
+    Example:
+        polypoly.bas
+        
+        
+<a name="2.2.19"></a>
+======================================================
+   2.2.19 - uglPolyPolyF   
+======================================================
+
+    Prototype:    
+        declare sub uglPolyPolyF (byval dc as long, seg pntArray as PNT2D,_
+                                  cntArray as PNT2D, byval polygons as integer,_
+                                  byval clr as long)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             pntArray           - Array of the type PNT2D where the points
+                                  for each polygon is stored
+             cntArray           - Array that describes how many points each
+                                  polygon has
+             polygons           - Tells the routine how many polygons 
+                                  there are
+             clr                - Color
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Same as uglPolyPoly except it fills the polygons with a
+        solid color.
+                    
+    Example:
+        polypolyf.bas
+        
+                
+<a name="2.2.20"></a>
+======================================================
+   2.2.20 - uglEllipse
+======================================================
+
+    Prototype:    
+        declare sub uglEllipse (byval dc as long, byval cx as integer,_
+                                byval cy as integer, byval rx as integer,_
+                                byval ry as integer, byval clr as long)
+
+    Arguments:
+        [in]  dc                - Destination DC
+              cx, cy            - Start x,y on the destination DC
+              rx, ry            - x, y radius
+              clr               - Color              
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Draws the outline of an ellipse on a DC
+                
+    Example:
+        ellip.bas
+        
+                
+<a name="2.2.21"></a>
+======================================================
+   2.2.21 - uglEllipseF
+======================================================
+
+    Prototype:    
+        declare sub uglEllipseF (byval dc as long, byval cx as integer,_
+                                 byval cy as integer, byval rx as integer,_
+                                 byval ry as integer, byval clr as long)
+
+    Arguments:
+        [in]  dc                - Destination DC
+              cx, cy            - Start x,y on the destination DC
+              rx, ry            - x, y radius
+              clr               - Color              
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Draws a filled ellipse on a DC
+                
+    Example:
+        ellipf.bas
+        
+                
+<a name="2.2.22"></a>
+======================================================
+   2.2.22 - uglPutFlip
+======================================================
+
+    Prototype:    
+        declare sub uglPutFlip (byval dst as long, byval x as integer,_
+                                byval y as integer,byval mode as integer,_
+                                byval src as long)
+
+    Arguments:
+        [in]  dst               - Destination DC
+              x, y              - Start x,y on the destination DC
+              mode              - Flip mode to use flip 
+                                    UGL.VFLIP  (flipped vertically), 
+                                    UGL.HFLIP  (flipped horizontally), 
+                                    UGL.VHFLIP (both)
+              src               - Source DC
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Same as uglPut except it can flip the image.
+                
+    Example:
+        putf.bas
+        
+                
+<a name="2.2.23"></a>
+======================================================
+   2.2.23 - uglPutMskFlip
+======================================================
+
+    Prototype:    
+        declare sub uglPutMskFlip (byval dst as long, byval x as integer,_
+                                   byval y as integer,byval mode as integer,_
+                                   byval src as long)
+
+    Arguments:
+        [in]  dst               - Destination DC
+              x, y              - Start x,y on the destination DC
+              mode              - Flip mode to use flip 
+                                    UGL.VFLIP  (flipped vertically), 
+                                    UGL.HFLIP  (flipped horizontally), 
+                                    UGL.VHFLIP (both)
+              src               - Source DC
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Same as uglPutMsk except it can flip the image.
+                
+    Example:
+        putmskf.bas
+        
+        
+        
+<a name="2.2.24"></a>
+======================================================
+   2.2.24 - uglPutRot
+======================================================
+
+   desc: draws a rotated image on destine dc
+  
+   args: [in] dst:long,         | destine dc
+              x:integer,        | center col
+              y:integer,        | /      row
+              angle:single,     | angle (in degrees)
+              src:long          | source dc (max 64k)
+   retn: none
+  
+   decl: uglPutRot (byval dst as long,_
+                    byval x as integer, byval y as integer,_
+                    byval angle as single,_
+                    byval src as long)
+  
+   chng: aug/02 written [Blitz]
+   obs.: none
+
+
+
+<a name="2.2.25"></a>
+======================================================
+   2.2.25 - uglPutScl
+======================================================
+
+   desc: draws a scaled image on destine dc
+  
+   args: [in] dst:long,         | destine dc
+              x:integer,        | center col
+              y:integer,        | /      row
+              xScale:single,    | horz scale (1 = 100%?)
+              yScale:single,    | vert scale (/)
+              src:long          | source dc (max 64k)
+   retn: none
+  
+   decl: uglPutScl (byval dst as long,_
+                    byval x as integer, byval y as integer,_
+                    byval xScale as single, byval yScale as single,_
+                    byval src as long)
+  
+   chng: aug/02 written [Blitz]
+   obs.: none
+
+
+
+<a name="2.2.26"></a>
+======================================================
+   2.2.26 - uglPutRotScl
+======================================================
+
+   desc: draws a rotated and scaled image on destine dc
+  
+   args: [in] dst:long,         | destine dc
+              x:integer,        | center col
+              y:integer,        | /      row
+              angle:single,     | angle (in degrees)
+              xScale:single,    | horz scale (1 = 100%?)
+              yScale:single,    | vert scale (/)
+              src:long          | source dc (max 64k)
+   retn: none
+  
+   decl: uglPutRotScl (byval dst as long,_
+                       byval x as integer, byval y as integer,_
+                       byval angle as single,_
+                       byval xScale as single, byval yScale as single,_
+                       byval src as long)
+  
+   chng: aug/02 written [Blitz]
+   obs.: none
+
+
+
+<a name="2.2.27"></a>
+======================================================
+   2.2.27 - uglPutMskRot
+======================================================
+
+   desc: draws a rotated sprite on destine dc
+  
+   args: [in] dst:long,         | destine dc
+              x:integer,        | center col
+              y:integer,        | /      row
+              angle:single,     | angle (in degrees)
+              src:long          | source dc (max 64k)
+   retn: none
+  
+   decl: uglPutMskRot (byval dst as long,_
+                       byval x as integer, byval y as integer,_
+                       byval angle as single,_
+                       byval src as long)
+  
+   chng: aug/02 written [Blitz]
+   obs.: none
+
+
+
+<a name="2.2.28"></a>
+======================================================
+   2.2.28 - uglPutMskScl
+======================================================
+
+   desc: draws a scaled sprite on destine dc
+  
+   args: [in] dst:long,         | destine dc
+              x:integer,        | center col
+              y:integer,        | /      row
+              xScale:single,    | horz scale (1 = 100%?)
+              yScale:single,    | vert scale (/)
+              src:long          | source dc (max 64k)
+   retn: none
+  
+   decl: uglPutMskScl (byval dst as long,_
+                       byval x as integer, byval y as integer,_
+                       byval xScale as single, byval yScale as single,_
+                       byval src as long)
+  
+   chng: aug/02 written [Blitz]
+   obs.: none
+
+
+
+<a name="2.2.29"></a>
+======================================================
+   2.2.29 - uglPutMskRotScl
+======================================================
+
+   desc: draws a rotated and scaled sprite on destine dc
+  
+   args: [in] dst:long,         | destine dc
+              x:integer,        | center col
+              y:integer,        | /      row
+              angle:single,     | angle (in degrees)
+              xScale:single,    | horz scale (1 = 100%?)
+              yScale:single,    | vert scale (/)
+              src:long          | source dc (max 64k)
+   retn: none
+  
+   decl: uglPutMskRotScl (byval dst as long,_
+                          byval x as integer, byval y as integer,_
+                          byval angle as single,_
+                          byval xScale as single, byval yScale as single,_
+                          byval src as long)
+  
+   chng: aug/02 written [Blitz]
+   obs.: none
+        
+
+
+<a name="2.3.1"></a>
+======================================================
+   2.3.1 - uglSetVisPage
+======================================================
+
+    Prototype:    
+        declare sub uglSetVisPage (byval visPg as integer)
+
+    Arguments:
+        [in] vidPg              - The page to make visible
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        This routine is used for paging. It set's the page that 
+        should be viewed on screen.
+                    
+    Example:
+        flip.bas
+        
+        
+
+<a name="2.3.2"></a>
+======================================================
+   2.3.2 - uglSetWrkPage
+======================================================
+
+    Prototype:    
+        declare sub uglSetWrkPage (byval wrkPg as integer)
+
+    Arguments:
+        [in] wrkPg              - The page to be written to when 
+                                  refering to the video DC.
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Used for paging. It sets the page that is should to be written
+        to when using the video DC as destination.
+                    
+    Example:
+        flip.bas
+        
+
+        
+<a name="2.4.1"></a>
+======================================================
+   2.4.1 - uglColor
+======================================================
+
+    Prototype:    
+        declare function uglColor& (byval fmt as integer, byval red as integer,_
+                                    byval green as integer, byval blue as integer)
+
+    Arguments:
+        [in] fmt                - Color format
+             red                - Red component   => 0 <= 255
+             green              - Green component => 0 <= 255
+             blue               - Blue component  => 0 <= 255
+              
+    Returns:    
+        The packed color value
+        
+    Description:
+        Converts RGB to the packed color value used, the destination
+        color format can be UGL.8BIT, UGL.15BIT, UGL.16BIT or UGL.32BIT
+                    
+    Example:
+        None
+        
+        
+<a name="2.4.2"></a>        
+======================================================
+   2.4.2 - uglColor8
+======================================================
+
+    Prototype:    
+        declare function uglColor8& (byval red as integer, byval green as integer,_
+                                     byval blue as integer)
+
+    Arguments:
+        [in] red                - Red component   => 0 <= 7
+             green              - Green component => 0 <= 7
+             blue               - Blue component  => 0 <= 3
+              
+    Returns:    
+        The packed color value
+        
+    Description:
+        Same as uglColor except it target bitdepth is for 8 bit 
+        color modes only.
+                        
+    Example:
+        None
+        
+        
+<a name="2.4.3"></a>
+======================================================
+   2.4.3 - uglColor15
+======================================================
+
+    Prototype:    
+        declare function uglColor15& (byval red as integer, byval green as integer,_
+                                      byval blue as integer)
+
+    Arguments:
+        [in] red                - Red component   => 0 <= 31
+             green              - Green component => 0 <= 31
+             blue               - Blue component  => 0 <= 31
+              
+    Returns:    
+        The packed color value
+        
+    Description:
+        Same as uglColor except it target bitdepth is for 15 bit 
+        color modes only.
+                        
+    Example:
+        None
+        
+        
+<a name="2.4.4"></a>
+======================================================
+   2.4.4 - uglColor16
+======================================================
+
+    Prototype:    
+        declare function uglColor16& (byval red as integer, byval green as integer,_
+                                      byval blue as integer)
+
+    Arguments:
+        [in] red                - Red component   => 0 <= 31
+             green              - Green component => 0 <= 63
+             blue               - Blue component  => 0 <= 31
+              
+    Returns:    
+        The packed color value
+        
+    Description:
+        Same as uglColor except it target bitdepth is for 16 bit 
+        color modes only.
+                        
+    Example:
+        None
+        
+        
+<a name="2.4.5"></a>
+======================================================
+   2.4.5 - uglColor32
+======================================================
+
+    Prototype:    
+        declare function uglColor32& (byval red as integer, byval green as integer,_
+                                      byval blue as integer)
+
+    Arguments:
+        [in] red                - Red component   => 0 <= 255
+             green              - Green component => 0 <= 255
+             blue               - Blue component  => 0 <= 255
+              
+    Returns:    
+        The packed color value
+        
+    Description:
+        Same as uglColor except it target bitdepth is for 32 bit 
+        color modes only.
+                        
+    Example:
+        None
+        
+        
+<a name="2.4.6"></a>
+======================================================
+   2.4.6 - uglGetConv
+======================================================
+
+    Prototype:    
+        declare sub uglGetConv (byval src as long, byval x as integer,_
+                                byval y as integer, byval dst as long)
+
+    Arguments:
+        [in]  src               - Source DC
+              x                 - Start X on source DC
+              y                 - Start Y on source DC
+              dst               - Destination DC
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Does the same as uglGet except it does color conversion if
+        it's needed.
+                        
+    Example:
+        none
+        
+        
+<a name="2.4.7"></a>
+======================================================
+   2.4.7 - uglPutConv
+======================================================
+
+    Prototype:    
+        declare sub uglPutConv (byval dst as long, byval x as integer,_
+                                byval y as integer, byval src as long)
+
+    Arguments:
+        [in]  dst               - Destination DC        
+              x                 - Start X on source DC
+              y                 - Start Y on source DC
+              src               - Source DC
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Does the same as uglPut except it does color conversion if
+        it's needed.
+                        
+    Example:
+        putconv.bas
+        
+        
+<a name="2.4.8"></a>
+======================================================
+   2.4.8 - uglRowRead
+======================================================
+
+    Prototype:    
+        declare sub uglRowRead (byval dc as long, byval x as integer,_
+                                byval y as integer, byval pixels as integer,_
+                                byval bufferFormat as integer, byval buffer as long)
+
+    Arguments:
+        [in] dc                 - Source DC
+             x, y               - Coordinates to start reading from
+             pixels             - Number of pixels to read
+             bufferFormat       - The color format of the destination buffer
+        [out] buffer            - A far pointer to the destination buffer, 
+                                  where the upper 16 bits is segment and lower
+                                  16 bits is the offset (seg:off)
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        This routine should be used when you want to copy pixels 
+        from a DC to a self defined buffer. The buffer could be a
+        a qb array or some other area in memory, as long as it's 
+        within the 1 MB memory limit of realmode. It also does color
+        conversion if it's needed.
+                                
+    Example:
+        row.bas
+        
+        
+<a name="2.4.9"></a>
+======================================================
+   2.4.9 - uglRowReadEx
+======================================================
+
+    Prototype:    
+        declare sub uglRowReadEx alias "uglRowRead"_
+                     (byval dc as long, byval x as integer,_
+                      byval y as integer, byval pixels as integer,_
+                      byval bufferFormat as integer, seg buffer as any)
+
+    Arguments:
+        [in] dc                 - Source DC
+             x, y               - Coordinates to start reading from
+             pixels             - Number of pixels to read
+             bufferFormat       - The color format of the destination buffer
+        [out] buffer            - The array or variable you want to use as 
+                                  destination
+              
+    Returns:    
+        Nothing
+        
+    Description:
+        Same as uglRowRead except the argument buffer is no 
+        longer a far pointer to the buffer, it's the actual
+        buffer.  
+                                
+    Example:
+        None
+        
+        
+<a name="2.4.10"></a>
+======================================================
+   2.4.10 - uglRowWrite
+======================================================
+
+    Prototype:    
+        declare sub uglRowWrite (byval dc as long, byval x as integer,_
+                                 byval y as integer, byval pixels as integer,_
+                                 byval bufferFormat as integer, byval buffer as long)
+
+    Arguments:
+        [in] dc                 - Source DC
+             x, y               - Coordinates to start reading from
+             pixels             - Number of pixels to write
+             bufferFormat       - The color format of the source buffer
+             buffer             - A far pointer to the destination buffer, 
+                                  where the upper 16 bits is segment and lower
+                                  16 bits is the offset (seg:off)
+                          
+    Returns:    
+        Nothing
+        
+    Description:
+        This routine should be used when you want to copy pixels 
+        from a self defined buffer to a DC. The buffer could be a
+        a qb array or some other area in memory, as long as it's 
+        within the 1 MB memory limit of realmode. It also does color
+        conversion if it's needed.
+                                
+    Example:
+        row.bas
+        
+        
+<a name="2.4.11"></a>
+======================================================
+   2.4.11 - uglRowWriteEx
+======================================================
+
+    Prototype:    
+        declare sub uglRowWriteEx alias "uglRowWrite"_
+                            (byval dc as long, byval x as integer,_
+                             byval y as integer, byval pixels as integer,_
+                             byval bufferFormat as integer, seg buffer as any)
+
+    Arguments:
+        [in] dc                 - Destination DC
+             x, y               - Coordinates to start reading from
+             pixels             - Number of pixels to write
+             bufferFormat       - The color format of the source buffer
+             buffer             - The array or variable you want to use as 
+                                  source
+                          
+    Returns:    
+        Nothing
+        
+    Description:
+        Same as uglRowWrite except the argument buffer is no 
+        longer a far pointer to the buffer, it's the actual
+        buffer.
+                                
+    Example:
+        None
+        
+        
+<a name="2.4.12"></a>
+======================================================
+   2.4.12 - uglRowSetPal
+======================================================
+
+    Prototype:    
+        declare sub uglRowSetPal (byval dcFmt as integer, byval bufferFmt as integer,_
+                                  byval pallete as long, byval entries as integer)
+
+    Arguments:
+        [in] dcType             - The color format of the
+                                  source/destination DC
+             bufferFmt          - The color format of the buffer
+             pallete            - A far pointer to the pallete (ARGB)
+             entries            - Number of entries in the palette, if the
+                                  you set this argument to 0 it will use all
+                                  255 entries
+                          
+    Returns:    
+        Nothing
+        
+    Description:
+        This routine set's the pallete used for color conversion
+        with the uglRowRead and uglRowWrite routines. If the argument
+        bufferFmt is other then UGL.8BIT it will just be ignored. Only
+        one palette can be used at the same time for conversion between 
+        8 <-> 8, 8 <-> 15, 8 <-> 16 and 8 <-> 32.
+                                    
+    Example:
+        None
+
+
+        
+        
+<a name="2.5.1"></a>
+======================================================
+   2.5.1 - uglNewBMP
+======================================================
+
+    Prototype:    
+        declare sub uglNewBMP& (byval typ as integer, byval fmt as integer, _
+                                flname as string)
+
+    Arguments:
+        [in] typ                - What kind of DC to allocate MEM/EMS
+             fmt                - The color format of the allocated dc
+                                  UGL.8BIT, UGL.15BIT, UGL.16BIT, UGL.32BIT
+             flname             - Path and filename of the bitmap
+                          
+    Returns:    
+        Handle to the DC that contains the Bitmap if the call was 
+        successful, if not it's returns False
+        
+    Description:
+        This routine creates a DC with same dimensions as the bitmap
+        and loads the bitmap onto the DC. The bitmap can be 1, 4, 8, 
+        15, 16, 24 & 32-bit non-compressed and 4-/8-bit RLE compressed 
+        Microsoft Windows BMP file.
+                                    
+    Example:
+        bmp.bas
+        
+
+<a name="2.5.2"></a>
+======================================================
+   2.5.2 - uglPutBMP
+======================================================
+
+    Prototype:    
+        declare sub uglPutBMP% (byval dc as long, byval x as integer,_
+                                byval y as integer, flname as string)
+
+    Arguments:
+        [in] dc                 - Handle to the DC to blit the bmp
+             x, y               - Coordinates on the DC to start
+                                  blitting to
+             flname             - Path and filename of the bitmap
+                          
+    Returns:    
+        True if it was able to perform the task, False otherwise
+        
+    Description:
+        Same as for uglNewBMP.
+                                    
+    Example:
+        putbmp.bas
+
+
+<a name="2.5.3"></a>        
+======================================================
+   2.5.3 - uglNewBMPEx
+======================================================
+
+    Prototype:    
+        declare sub uglNewBMPEx& (byval typ as integer, byval fmt as integer, _
+                                  flname as string, byval opt as integer
+    Arguments:
+        [in] typ                - What kind of DC to allocate MEM/EMS
+             fmt                - The color format of the allocated dc
+                                  UGL.8BIT, UGL.15BIT, UGL.16BIT, UGL.32BIT        
+             flname             - Path and filename of the bitmap
+             opt                - BMPOPT.NO332, BMPOPT.MASK
+
+                          
+    Returns:    
+        Handle to the DC that contains the Bitmap if the call was 
+        successful, if not it's returns False
+        
+    Description:
+        Same as uglNew, except BMPOPT.NO332 will tell it not to
+        convert the colors to the 332 palette for 8 bit dcs. And
+        BMPOPT.MASK will filter out the mask color (1.0, 0.0, 1.0).
+                                    
+    Example:
+        none
+        
+
+<a name="2.5.4"></a>
+======================================================
+   2.5.4 - uglPutBMPEx
+======================================================
+
+    Prototype:    
+        declare sub uglPutBMPEx% (byval dc as long, _
+                                  byval x as integer, byval y as integer, _
+                                  flname as string, byval opt as integer)
+
+    Arguments:
+        [in] dc                 - Handle to the DC to blit the bmp
+             x, y               - Coordinates on the DC to start
+                                  blitting to
+             flname             - Path and filename of the bitmap
+             opt                - BMPOPT.NO332, BMPOPT.MASK
+                          
+    Returns:    
+        True if it was able to perform the task, False otherwise
+        
+    Description:
+        Same as uglPut, except BMPOPT.NO332 will tell it not to
+        convert the colors to the 332 palette for 8 bit dcs. And
+        BMPOPT.MASK will filter out the mask color (1.0, 0.0, 1.0).
+                                    
+    Example:
+        none
+        
+        
+        
+
+<a name="2.6.1"></a>
+======================================================
+   2.6.1 - uglColors
+======================================================
+
+    Prototype:    
+        declare sub uglColors& (byval fmt as integer)
+
+    Arguments:
+        [in] fmt                - The target bit depth
+                          
+    Returns:    
+        Number of colors available for that specific
+        color format
+        
+    Description:
+    Returns the number of colors available for a
+    specific color format.
+                                    
+    Example:
+        None
+        
+                
+<a name="2.6.2"></a>
+======================================================
+   2.6.2 - uglColorsEx
+======================================================
+
+    Prototype:    
+        declare sub uglColorsEx& (byval dc as long)
+
+    Arguments:
+        [in] dc                - The target DC
+                          
+    Returns:    
+        Number of colors available for that 
+        specific DC.
+        
+    Description:
+    Returns the number of colors available for a
+    specific DC.
+                                    
+    Example:
+        None
+        
+                
+<a name="2.6.3"></a>
+======================================================
+   2.6.3 - uglDCget
+======================================================
+
+    Prototype:    
+        declare sub uglDCget (byval dc as long, seg dcInfo as TDC)
+
+    Arguments:
+        [in] dc                - The target DC
+       [out] dcInfo            - A variable of the type TDC
+                          
+    Returns:    
+    Nothing
+        
+    Description:
+    This routine should be used to get information
+    about a certain DC. 
+                                    
+    Example:
+        None
+
+
+<a name="2.6.4"></a>        
+======================================================
+   2.6.4 - uglDCAccessRd
+======================================================
+
+   desc: returns a pointer to a dc scanline (for read access)
+
+   args: [in]  dc:long,         | DC to access
+               y:integer        | scanline
+   retn: far pointer to scanline
+
+   decl: uglDCAccessRd (byval dc as long,_
+                        byval y as integer)
+
+   chng: sep/02 [v1ctor]
+   obs.: no clipping is done
+
+
+
+<a name="2.6.5"></a>
+======================================================
+   2.6.5 - uglDCAccessWr
+======================================================
+
+   desc: returns a pointer to a dc scanline (for write access)
+
+   args: [in]  dc:long,         | DC to access
+               y:integer        | scanline
+   retn: far pointer to scanline
+
+   decl: uglDCAccessWr (byval dc as long,_
+                        byval y as integer)
+
+   chng: sep/02 [v1ctor]
+   obs.: no clipping is done
+
+
+
+<a name="2.6.6"></a>
+======================================================
+   2.6.6 - uglDCAccessRdWr
+======================================================
+
+   desc: returns pointers to a dc scanline (for read and write access)
+
+   args: [in]  dc:long,         | DC to access
+               y:integer,       | scanline
+               rdPtr:*long      | read access far pointer
+   retn: far pointer to scanline
+
+   decl: uglDCAccessRdWr (byval dc as long,_
+                          byval y as integer,_
+                          rdPtr as long)
+
+   chng: sep/02 [v1ctor]
+   obs.: no clipping is done
+       
+        
+        
+        
+<a name="2.7.1"></a>
+======================================================
+   2.7.1 - uglTriF
+======================================================
+
+    Prototype:    
+        declare sub uglTriF (byval dc as long, _
+                             seg vtx as TriType, _
+                             byval clr as long)
+                                  
+    Arguments:
+        [in] dc               - The destination DC
+             vtx              - The tri coordinates
+             clr              - the color
+    Returns:    
+        nothing
+
+    Description:
+        Draws a flat shaded triangle on the
+        destination DC. Meant to be used by 3D 
+        applications and has sub pixel accuracy. No
+        specific vertex order is required. However,
+        clock wise order is recomended.
+        
+    
+    Example:
+        trif.bas
+   
+   
+   
+<a name="2.7.2"></a>
+======================================================
+   2.7.2 - uglQuadF
+======================================================
+
+    Prototype:    
+        declare sub uglQuadF (byval dc as long, _
+                              seg vtx as QuadType, _
+                              byval clr as long)
+                                  
+    Arguments:
+        [in] dc               - The destination DC
+             vtx              - The quad coordinates
+             clr              - the color
+    Returns:    
+        nothing
+
+    Description:
+        Draws a flat shaded quadrangle on the
+        destination DC. Meant to be used by 3D 
+        applications and has sub pixel accuracy. 
+        Clockwise vertex order is required.
+        
+    
+    Example:
+        quadf.bas
+        
+   
+
+<a name="2.7.3"></a>
+======================================================
+   2.7.3 - uglTriT
+======================================================
+
+    Prototype:    
+        declare sub uglTriT (byval dstDC as long, _
+                             seg vtx as TriType, _
+                             byval mask as integer, _
+                             byval srcDC as long)
+                                  
+    Arguments:
+        [in] dstDC            - The destination DC
+             vtx              - The tri coordinates and
+                                texture coordinates
+             mask             - Wether or not to filter out the
+                                color (1.0, 0.0, 1.0), can be:
+                                    UGL.MASK.FALSE
+                                    UGL.MASK.TRUE
+             srcDC            - The DC where the texture is
+             
+    Returns:    
+        nothing
+
+    Description:
+        Draws an affine textured triangle on the destination 
+        DC. Meant to be used by 3D applications and has sub 
+        pixel & texel accuracy. No specific vertex order is
+        required. However, clockwise is recomended.
+        
+        A few rules: 
+            - The texture has to have power of two width and
+              height. This means the it's width and height
+              should be numbers like, 1, 2, 4, 8, 16, 32, 64
+              128, 256 etc etc.
+              
+            - If the DC is allocated in UGL.MEM it can be up 
+              to 64 KB. 
+              
+            - If the DC is allocated in UGL.EMS it can be up 
+              to 16 KB. Although this will change in the near
+              future to 64 KB too. 
+              
+            - Don't be afraid of using EMS DCs as textures. 
+              The way this works in µGL virtually eliminates
+              performance loss between UGL.MEM and UGL.EMS DCs
+              for textures.
+              
+            - If the srcDC is allocated in UGL.EMS the dstDC
+              cannot be allocated in UGL.EMS and vice versa.
+              
+            - The texture coordinates are in the range 
+              0.0-1.0, this makes them independant of the
+              size of the actual texture. It also makes it
+              possible for us to add mip-mapping in the future.
+              As pretty much all modellers return the texture
+              coordinates as normalized coordinates ( 0.0 - 1.0 )
+              too this shouldn't be a problem for anyone. 
+              
+            - To calculate the size of an DC you do this:
+                  8  bpp = 1 bytes_per_pixel
+                  15 bpp = 2 bytes_per_pixel
+                  16 bpp = 2 bytes_per_pixel
+                  32 bpp = 4 bytes_per_pixel
+                  
+                  size_in_bytes  = xRes*yRes*bytes_per_pixel
+                  size_in_kbytes = size_in_bytes / 1024
+              
+              In practice this means that if have a dc that is
+              128x128x16 it would be 128*128*2 (32768) bytes.
+              or 32768/1024 (32) kilo bytes.
+              
+            - Texturing polygons doesn't get faster then this
+              in software. So enjoy...
+        
+    
+    Example:
+        trit.bas
+  
+
+
+<a name="2.7.4"></a>
+======================================================
+   2.7.4 - uglQuadT
+======================================================
+
+    Prototype:    
+        declare sub uglQuadT (byval dstDC as long, _
+                              seg vtx as QuadType, _
+                              byval mask as integer, _
+                              byval srcDC as long)
+                                  
+    Arguments:
+        [in] dstDC            - The destination DC
+             vtx              - The quad coordinates and
+                                texture coordinates
+             mask             - Wether or not to filter out the
+                                color (1.0, 0.0, 1.0), can be:
+                                    UGL.MASK.FALSE
+                                    UGL.MASK.TRUE
+             srcDC            - The DC where the texture is
+             
+    Returns:    
+        nothing
+
+    Description:
+        Draws an affine textured triangle on the destination 
+        DC. Meant to be used by 3D applications and has sub 
+        pixel & texel accuracy. Clockwise vertex order is
+        required.
+        
+        A few rules: 
+            - The texture has to have power of two width and
+              height. This means the it's width and height
+              should be numbers like, 1, 2, 4, 8, 16, 32, 64
+              128, 256 etc etc.
+              
+            - If the DC is allocated in UGL.MEM it can be up 
+              to 64 KB. 
+              
+            - If the DC is allocated in UGL.EMS it can be up 
+              to 16 KB. Although this will change in the near
+              future to 64 KB too. 
+              
+            - Don't be afraid of using EMS DCs as textures. 
+              The way this works in UGL virtually eliminates
+              performance loss between UGL.MEM and UGL.EMS DCs
+              for textures.
+              
+            - If the srcDC is allocated in UGL.EMS the dstDC
+              cannot be allocated in UGL.EMS and vice versa.
+              
+            - The texture coordinates are in the range 
+              0.0-1.0, this makes them independant of the
+              size of the actual texture. It also makes it
+              possible for us to add mip-mapping in the future.
+              As pretty much all modellers return the texture
+              coordinates as normalized coordinates ( 0.0 - 1.0 )
+              too this shouldn't be a problem for anyone. 
+              
+            - To calculate the size of an DC you do this:
+                  8  bpp = 1 bytes_per_pixel
+                  15 bpp = 2 bytes_per_pixel
+                  16 bpp = 2 bytes_per_pixel
+                  32 bpp = 4 bytes_per_pixel
+                  
+                  size_in_bytes  = xRes*yRes*bytes_per_pixel
+                  size_in_kbytes = size_in_bytes / 1024
+              
+              In practice this means that if have a dc that is
+              128x128x16 it would be 128*128*2 (32768) bytes.
+              or 32768/1024 (32) kilo bytes.
+              
+            - Texturing polygons doesn't get faster then this
+              in software. So enjoy...
+        
+    
+    Example:
+        quadt.bas
+  
+
+
+<a name="2.7.5"></a>
+======================================================
+   2.7.5 - uglTriG
+======================================================
+
+    Prototype:    
+        declare sub uglTriF (byval dc as long, _
+                             seg vtx as TriType)
+                                  
+    Arguments:
+        [in] dc               - The destination DC
+             vtx              - The tri coordinates
+             
+    Returns:    
+        nothing
+
+    Description:
+        Draws a gouraud shaded triangle on the
+        destination DC. Meant to be used by 3D 
+        applications and has sub pixel accuracy. No
+        specific vertex order is required. However,
+        clock wise order is recomended.
+        
+    
+    Example:
+        trig.bas  
+
+
+
+
+<a name="2.8.1"></a>
+======================================================
+   2.8.1 - uglPalGet
+======================================================
+
+    Prototype:    
+        declare sub uglPalGet ( byval idx as integer, _
+                                byval entries as integer, _
+                                byval pal as long )
+
+    Arguments:
+        [in] idx              - Index of the first color to get
+             entries          - Number of colors to get
+             pal              - a far pointer to the palette
+
+    Returns:    
+        nothing
+        
+    Description:
+        Fetches the palette starting at the color specified
+        as the idx argument and getting as many colors as
+        specified as the entries argument. 
+        
+        NOTE: The color components are in the range 0-255
+              and not 0-63 which you might used to. This
+              is becuase many VESA cards support higher
+              precision palettes. 
+              
+              To convert a palette with components in the
+              range 0-63 to one with the range 0-255, just
+              take each component and multiply it with four.
+
+    Example:
+        none
+        
+        
+
+<a name="2.8.2"></a>
+======================================================
+   2.8.2 - uglPalSet
+======================================================
+
+    Prototype:    
+        declare sub uglPalSet ( byval idx as integer, _
+                                byval entries as integer, _
+                                byval pal as long )
+
+    Arguments:
+        [in] idx              - Index of the first color to change
+             entries          - Number of colors to change
+             pal              - a far pointer to the palette
+
+    Returns:    
+        nothing
+        
+    Description:
+        Changes the palette starting at the color specified
+        as the idx argument and setting as many colors as
+        specified as the entries argument. 
+        
+        NOTE: The color components are in the range 0-255
+              and not 0-63 which you might used to. This
+              is becuase many VESA cards support higher
+              precision palettes. 
+              
+              To convert a palette with components in the
+              range 0-63 to one with the range 0-255, just
+              take each component and multiply it with four.
+
+    Example:
+        none
+        
+
+
+<a name="2.8.3"></a>
+======================================================
+   2.8.3 - uglPalGetBuff
+======================================================
+
+    Prototype:    
+        declare sub uglPalGetBuff ( byval idx as integer, _
+                                    byval entries as integer, _
+                                    seg pal as TRGB )
+
+    Arguments:
+        [in] idx              - Index of the first color to change
+             entries          - Number of colors to change
+             pal              - an array of the type TRGB which
+                                contains the palette
+
+    Returns:    
+        nothing
+        
+    Description:
+        Fetches the palette starting at the color specified
+        as the idx argument and getting as many colors as
+        specified as the entries argument. 
+        
+        NOTE: The color components are in the range 0-255
+              and not 0-63 which you might used to. This
+              is becuase many VESA cards support higher
+              precision palettes. 
+              
+              To convert a palette with components in the
+              range 0-63 to one with the range 0-255, just
+              take each component and multiply it with four.
+
+    Example:
+        none
+        
+        
+        
+<a name="2.8.4"></a>
+======================================================
+   2.8.4 - uglPalSetBuff
+======================================================
+
+    Prototype:    
+        declare sub uglPalSetBuff ( byval idx as integer, _
+                                    byval entries as integer, _
+                                    seg pal as TRGB )
+
+    Arguments:
+        [in] idx              - Index of the first color to change
+             entries          - Number of colors to change
+             pal              - an array of the type TRGB which
+                                contains the palette
+
+    Returns:    
+        nothing
+        
+    Description:
+        Sets the palette starting at the color specified
+        as the idx argument and setting as many colors as
+        specified as the entries argument. 
+        
+        NOTE: The color components are in the range 0-255
+              and not 0-63 which you might used to. This
+              is becuase many VESA cards support higher
+              precision palettes. 
+              
+              To convert a palette with components in the
+              range 0-63 to one with the range 0-255, just
+              take each component and multiply it with four.
+
+    Example:
+        none
+        
+        
+
+<a name="2.8.5"></a>
+======================================================
+   2.8.5 - uglPalLoad
+======================================================
+
+    Prototype:    
+        declare function uglPalLoad& (flname as string, _
+                                      byval fmt as integer)
+
+    Arguments:
+        [in] filename         - Filename of the palette to load
+             fmt              - The format which the palette is
+                                stored in the file, either PALRGB
+                                or PALBGR
+
+    Returns:    
+        nothing
+        
+    Description:
+        Loads a file containing a palette into memory and
+        returns a far pointer to it. 
+        
+        Use uglPalSet to set the palette and free the memory
+        with memFree
+
+    Example:
+        none
+        
+        
+        
+        
+
+<a name="3.1.1"></a>
+======================================================
+   3.1.1 - ugluCubicBez      
+======================================================
+
+    Prototype:    
+      declare sub ugluCubicBez (SEG storage as PNT2D, SEG cbz as CUBICBEZ,_
+                                BYVAL levels as integer)
+
+    Arguments:
+      [in]  cbz                 - Cubic bezier struct with the 4 control
+                                  points
+            levels              - Level of detail, has to be bigger then one
+      [out] storage             - Array of the type PNT2D to store the curve
+                                  points. The size of the array has to be
+                                  levels + 1.
+    
+    Returns:    
+        Nothing
+        
+    Description:
+        This is basically the same routine as uglCubicBez except instead
+        of drawing the curve on screen it stores the curve points in an
+        array of the type PNT2D. The size of array has to be levels + 1.
+        The argument levels tells routine how much detail it should
+        create the curve with. The more detail the curve has the nicer it
+        looks and the longer it takes to compute. A good balance is between
+        16-32 points for the detail. It should be noted that this routine
+        uses a technique called forward differencing, instead of using
+        zillions of multiplications to compute each point on the curve it
+        uses just 3 adds per component. Also to be noted is that it uses
+        fixed point all the way so it's friendly to use on cpu's that have
+        weak or no fpu's.
+
+    Example:
+        ucbez.bas
+
+
+<a name="3.1.2"></a>
+======================================================
+  3.1.2 - ugluCubicBez3D 
+======================================================
+
+    Prototype:    
+      declare sub ugluCubicBez3D (SEG storage as PNT3D, SEG cbz as CUBICBEZ3D_
+                                  BYVAL levels as integer)
+
+    Arguments:
+      [in]  cbz                 - Cubic bezier struct with the 4 control
+                                  points
+            levels              - Level of detail, has to be bigger then one
+      [out] storage             - Array of the type PNT3D to store the curve
+                                  points. The size of the array has to be
+                                  levels + 1.
+    
+    Returns:    
+        Nothing
+        
+    Description:
+        This is basically the same routine as ugluCubicBez except instead
+        except it uses the fpu and considers the Z coordinate and not just
+        X and Y. The size of array has to be levels + 1.
+        The argument levels tells routine how much detail it should
+        create the curve with. The more detail the curve has the nicer
+        it looks and the longer it takes to compute. A good balance is
+        between 16-32 points for the detail. It should be noted that this
+        routine uses a technique called forward differencing, instead of
+        using zillions of multiplications to compute each point on the
+        curve it uses just 3 adds per component. Becuase floating point
+        it used all through the 3D pipeline i decided that this routine
+        should work with floating point. Thus it uses the fpu.
+
+    Example:
+        ucbez3d.bas
+
+
+<a name="3.1.3"></a>
+======================================================
+   3.1.3 - ugluQuadricBez   
+======================================================
+
+    Prototype:    
+      declare sub ugluQuadricBez (SEG storage as PNT2D, SEG qbz as QUADBEZ,_
+                                  BYVAL levels as integer)
+
+    Arguments:
+      [in]  qbz                 - Quadric bezier struct with the 3 control
+                                  points
+            levels              - Level of detail, has to be bigger then one
+      [out] storage             - Array of the type PNT2D to store the curve
+                                  points. The size of the array has to be
+                                  levels + 1.
+    
+    Returns:    
+        Nothing
+        
+    Description:
+        This is basically the same routine as uglQuadricBez except instead
+        of drawing the curve on screen it stores the curve points in an
+        array of the type PNT2D. The size of array has to be levels + 1.
+        The argument levels tells routine how much detail it should
+        create the curve with. The more detail the curve has the nicer it
+        looks and the longer it takes to compute. A good balance is between
+        12-20 points for the detail. It should be noted that this routine
+        uses a technique called forward differencing, instead of using
+        zillions of multiplications to compute each point on the curve it
+        uses just 2 adds per component. Also to be noted is that it uses
+        fixed point all the way so it's friendly to use on cpu's that have
+        weak or no fpu's.
+
+    Example:
+        uqbez.bas        
+
+
+<a name="3.1.4"></a>
+======================================================
+   3.1.4 - ugluQuadricBez3D 
+======================================================
+
+    Prototype:    
+      declare sub ugluQuadricBez3D (SEG storage as PNT3D, SEG qbz as QUADBEZ3D_
+                                    BYVAL levels as integer)
+
+    Arguments:
+      [in]  qbz                 - Quadric bezier struct with the 3 control
+                                  points
+            levels              - Level of detail, has to be bigger then one
+      [out] storage             - Array of the type PNT2D to store the curve
+                                  points. The size of the array has to be
+                                  levels + 1.
+    
+    Returns:    
+        Nothing
+        
+    Description:
+        This is basically the same routine as ugluQuadricBez except instead
+        except it uses the fpu and considers the Z coordinate and not just
+        X and Y. The size of array has to be levels + 1.
+        The argument levels tells routine how much detail it should
+        create the curve with. The more detail the curve has the nicer
+        it looks and the longer it takes to compute. A good balance is
+        between 12-20 points for the detail. It should be noted that this
+        routine uses a technique called forward differencing, instead of
+        using zillions of multiplications to compute each point on the
+        curve it uses just 2 adds per component. Becuase floating point
+        it used all through the 3D pipeline i decided that this routine
+        should work with floating point. Thus it uses the fpu.
+
+    Example:
+        uqbez3d.bas
+        
+        
+        
+<a name="3.2.1"></a>
+======================================================
+   3.2.1 - kbdInit
+======================================================
+
+    Prototype:    
+        declare sub kbdInit (seg kbd as TKBD)
+
+    Arguments:
+        [in/out] kbd           - A structure that holds the
+                                 state of the keys                        
+    Returns:    
+    Nothing
+        
+    Description:
+    Installs a new keyboard ISR that enables multiple
+    key presses at the same time. When you're creating
+    the keyboard stucture you have to think about the 
+    fact that it cannot be dynamic. If it's dynamic qb
+    might move it and you'll end up with a crash. Also
+    important to think about is that once this ISR is 
+    running none of the old key board routines like 
+    inkey$ will work. When you're running in the IDE 
+    you have to make sure you deinstall this ISR before
+    returning to the IDE or nothing will work.
+                                    
+    Example:
+        kbd.bas
+        
+        
+<a name="3.2.2"></a>        
+======================================================
+   3.2.2 - kbdEnd
+======================================================
+
+    Prototype:    
+        declare sub kbdEnd ()
+
+    Arguments:
+        None
+                                  
+    Returns:    
+    Nothing
+        
+    Description:
+    Removes the keyboard ISR installed by kbdInit
+    and restores the old one. It will be called 
+    automatically when the program is compiled. 
+                                    
+    Example:
+        kbd.bas
+        
+        
+<a name="3.2.3"></a>
+======================================================
+   3.2.3 - kbdPause
+======================================================
+
+    Prototype:    
+        declare sub kbdPause ()
+
+    Arguments:
+        None
+                                  
+    Returns:    
+    Nothing
+        
+    Description:
+    Gives the control of the keyboard back to BIOS 
+    until kbdResume is called.
+                                        
+    Example:
+        kbd.bas
+        
+        
+<a name="3.2.4"></a>
+======================================================
+   3.2.4 - kbdResume
+======================================================
+
+    Prototype:    
+        declare sub kbdResume ()
+
+    Arguments:
+        None
+                                  
+    Returns:    
+    Nothing
+        
+    Description:
+    Get the control of the keyboard back from the
+    BIOS.
+                                        
+    Example:
+        kbd.bas
+        
+        
+        
+        
+<a name="3.3.1"></a>
+======================================================
+   3.3.1 - mouseInit
+======================================================
+
+    Prototype:    
+        declare function mouseInit% (byval dc as long, seg ms as MOUSEINF)
+
+    Arguments:
+        [in] dc:long            - The DC where the mouse cursor
+                                  will be shown
+    [in/out] ms                 - Structure to hold the position
+                                  of the cursor and the state of
+                                  the mouse buttons
+                                  
+    Returns:    
+    Returns True if everything went ok and False
+    if not
+        
+    Description:
+    This routine installs the device driver for the 
+    mouse. It's important that the ms variable is not
+    dynamic. A few facts:
+    - A default cursor is created
+    - The range of the cursor is set to the DCs clipping
+      rectangle
+    - The ratio (sensitivity) is set to 8 for both 
+      x and y
+    - The cursor is turned off
+                                        
+    Example:
+        mouse.bas
+        
+        
+<a name="3.3.2"></a>
+======================================================
+   3.3.2 - mouseReset
+======================================================
+
+    Prototype:    
+        declare function mouseReset% (byval dc as long, seg ms as MOUSEINF)
+
+    Arguments:
+        [in] dc:long            - The DC where the mouse cursor
+                                  will be shown
+    [in/out] ms                 - Structure to hold the position
+                                  of the cursor and the state of
+                                  the mouse buttons
+                                  
+    Returns:    
+    Returns True if everything went ok and False
+    if not
+        
+    Description:
+    Soft resets the driver, thus it assumes that
+    there is a mouse. In a nutshell it does the
+    same thing as mouseInit
+                                        
+    Example:
+        mouse.bas
+        
+        
+<a name="3.3.3"></a>
+======================================================
+   3.3.3 - mouseEnd
+======================================================
+
+    Prototype:    
+        declare sub mouseEnd ()
+
+    Arguments:
+    None
+                                      
+    Returns:    
+    Nothing
+        
+    Description:
+    Restores the old mouse driver, will be called
+    automatically when the program is compiled but
+    has to be called from the IDE.
+                                        
+    Example:
+        mouse.bas
+        
+        
+<a name="3.3.4"></a>
+======================================================
+   3.3.4 - mouseCursor
+======================================================
+
+    Prototype:    
+        declare sub mouseCursor (byval cursor as long, byval xSpot as integer,_
+                                 byval ySpot as integer)
+                                 
+    Arguments:
+    [in] cursor                 - The handle to the DC that you want
+                                  to use as replacement of the default
+                                  cursor
+         xSpot                  - ?
+         ySpot                  - ?
+                                      
+    Returns:    
+    Nothing
+        
+    Description:
+    Used to define a new cursor for the mouse, can be any
+    color format and doesn't have to be the same as the 
+    destination DC.
+                                        
+    Example:
+        mouse.bas
+        
+        
+<a name="3.3.5"></a>
+======================================================
+   3.3.5 - mouseShow
+======================================================
+
+    Prototype:    
+        declare sub mouseShow ()
+                                 
+    Arguments:
+        None
+                                      
+    Returns:    
+    Nothing
+        
+    Description:
+    Makes the mouse cursor visible.
+                                        
+    Example:
+        mouse.bas
+        
+        
+<a name="3.3.6"></a>
+======================================================
+   3.3.6 - mouseHide
+======================================================
+
+    Prototype:    
+        declare sub mouseHide ()
+                                 
+    Arguments:
+        None
+                                      
+    Returns:    
+    Nothing
+        
+    Description:
+    Hides the mouse cursor.
+                                        
+    Example:
+        mouse.bas
+        
+        
+<a name="3.3.7"></a>
+======================================================
+   3.3.7 - mouseRange
+======================================================
+
+    Prototype:    
+        declare sub mouseRange (byval xmin as integer, byval ymin as integer,_
+                                byval xmax as integer, byval ymax as integer)
+                                 
+    Arguments:
+        [in] xmin, ymin, 
+             xmax, ymax         - Coordinates
+                                      
+    Returns:    
+    Nothing
+        
+    Description:
+    Defines the range of the mouse cursor.
+                                        
+    Example:
+        mouse.bas
+        
+        
+<a name="3.3.8"></a>
+======================================================
+   3.3.8 - mousePos
+======================================================
+
+    Prototype:    
+        declare sub mousePos (byval x as integer, byval y as integer)
+                                 
+    Arguments:
+        [in] x, y               - Coordinates
+             
+                                      
+    Returns:    
+    Nothing
+        
+    Description:
+    Set the position of the cursor.
+                                        
+    Example:
+        mouse.bas
+        
+        
+<a name="3.3.9"></a>
+======================================================
+   3.3.9 - mouseRatio
+======================================================
+
+    Prototype:    
+        declare sub mouseRatio (byval hMickeys as integer,_
+                                byval vMickeys as integer)
+
+    Arguments:
+        [in] hMickeys           - Mickeys per pixels (X)
+             vMickeys           - Mickeys per pixels (Y)
+              
+    Returns:    
+    Nothing
+
+    Description:
+    Sets the sensitivity of the mouse, 
+    mickeys > 0 and < 256; big values, less precision.
+
+    Example:
+        mouse.bas
+        
+        
+        
+        
+<a name="3.4.1"></a>
+======================================================
+   3.4.1 - fontNew
+======================================================
+
+    Prototype:    
+        declare function fontNew& (fileName as string)
+
+    Arguments:
+        [in] fileName           - Font path & name
+             
+              
+    Returns:    
+    A handle for the font, this handle will be used
+    to refer to it. The handle is as all other µGL 
+    handles 32 bit (long integer). If 0 (false) is 
+    returned the routine failed to load the font.
+
+    Description:
+    Loads a UVF/UBF font. But for the moment only
+    UVF fonts are supported.
+
+    Example:
+        uvf.bas / uvf2.bas
+        
+        
+<a name="3.4.2"></a>
+======================================================
+   3.4.2 - fontDel
+======================================================
+
+    Prototype:    
+        declare sub fontDel (seg uFont as long)
+
+    Arguments:
+        [in] uFont          - Font handle
+             
+              
+    Returns:    
+    Nothing
+
+    Description:
+    Frees up the memory allocated by a UVF/UBF font
+    and set the handle to NULL (0). Deallocation of
+    fonts is done automatically and this routine should
+    only be used when you really need the memory.
+    
+    Example:
+        uvf.bas / uvf2.bas
+        
+        
+<a name="3.4.3"></a>
+======================================================
+   3.4.3 - fontSetAlign
+======================================================
+
+    Prototype:    
+        declare sub fontSetAlign (byval horz as integer, _
+                                  byval vert as integer)
+                                  
+    Arguments:
+        [in] horz           - horizontal alignment (FONT.HALIGN.LEFT,
+                                                    FONT.HALIGN.RIGHT,
+                                                    FONT.HALIGN.CENTER)
+             vert           - vertical alignment   (FONT.VALIGN.TOP,
+                                                    FONT.VALIGN.BOTTOM,
+                                                    FONT.VALIGN.BASELINE)
+              
+    Returns:    
+    Nothing
+
+    Description:
+    Sets the horizontal and vertical aligment of
+    font drawn using fontTextOut
+    
+    Example:
+        uvf.bas / uvf2.bas
+        
+        
+<a name="3.4.4"></a>
+======================================================
+   3.4.4 - fontGetAlign
+======================================================
+
+    Prototype:    
+        declare sub fontGetAlign (horz as integer, _                                  
+                                  vert as integer)
+                                  
+    Arguments:
+       [out] horz           - horizontal alignment
+             vert           - vertical alignment
+              
+    Returns:    
+    Nothing
+
+    Description:
+    Gets the horizontal and vertical aligment of
+    font drawn using fontTextOut
+    
+    Example:
+        none
+        
+        
+<a name="3.4.5"></a>
+======================================================
+   3.4.5 - fontHAlign
+======================================================
+
+    Prototype:    
+        declare function fontHAlign% (byval mode as integer)
+
+    Arguments:
+        [in] mode           - horizontal alignment (FONT.HALIGN.LEFT,
+                                                    FONT.HALIGN.RIGHT,
+                                                    FONT.HALIGN.CENTER)
+                                                                  
+    Returns:    
+    The previous horizontal alignment
+
+    Description:
+    Sets the horizontal aligment and returns the 
+    current horizontal aligment.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.6"></a>
+======================================================
+   3.4.6 - fontSetHAlign
+======================================================
+
+    Prototype:    
+        declare sub fontSetHAlign alias "fontHAlign" _
+                             (byval mode as integer)
+
+    Arguments:
+        [in] mode           - horizontal alignment (FONT.HALIGN.LEFT,
+                                                    FONT.HALIGN.RIGHT,
+                                                    FONT.HALIGN.CENTER)
+                                                                  
+    Returns:    
+    Nothing
+
+    Description:
+        Same as fontHAlign except it doesn't return 
+        the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.7"></a>
+======================================================
+   3.4.7 - fontVAlign
+======================================================
+
+    Prototype:    
+        declare function fontVAlign% (byval mode as integer)
+
+    Arguments:
+        [in] mode           - vertical alignment   (FONT.VALIGN.TOP,
+                                                    FONT.VALIGN.BOTTOM,
+                                                    FONT.VALIGN.BASELINE)
+                                                                                                                      
+    Returns:    
+    The previous vertical alignment
+
+    Description:
+    Sets the vertical aligment and returns the 
+    current vertical aligment.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.8"></a>
+======================================================
+   3.4.8 - fontSetVAlign
+======================================================
+
+    Prototype:    
+        declare sub fontSetVAlign alias "fontVAlign" _
+                             (byval mode as integer)
+                                  
+    Arguments:
+        [in] mode           - vertical alignment   (FONT.VALIGN.TOP,
+                                                    FONT.VALIGN.BOTTOM,
+                                                    FONT.VALIGN.BASELINE)
+
+    Returns:    
+    Nothing
+
+    Description:
+    Same as fontVAlign except it doesn't return 
+    the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.9"></a>
+======================================================
+   3.4.9 - fontExtraspc
+======================================================
+
+    Prototype:    
+        declare function fontExtraSpc% (byval extra as integer)
+                                  
+    Arguments:
+        [in] extra          - Extra spacing in pixels
+        
+    Returns:    
+    Current spacing in pixels
+
+    Description:
+    Sets the extra spacing between the glyphs and 
+    returns the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.10"></a>
+======================================================
+   3.4.10 - fontSetExtraspc
+======================================================
+
+    Prototype:    
+        declare sub fontSetExtraSpc alias "fontExtraSpc"_
+                                 (byval extra as integer)
+                                  
+    Arguments:
+        [in] extra          - Extra spacing in pixels
+        
+    Returns:    
+    Nothing
+
+    Description:
+    Same as fontExtraSpc except it doesn't return 
+    the current setting
+    
+    Example:
+        none
+        
+        
+<a name="3.4.11"></a>
+======================================================
+   3.4.11 - fontGetExtraspc
+======================================================
+
+    Prototype:    
+        declare function fontGetExtraspc% ()
+                                  
+    Arguments:
+        none
+        
+    Returns:    
+    Current spacing in pixels
+
+    Description:
+    Returns the current spacing setting
+    
+    Example:
+        none
+        
+        
+<a name="3.4.12"></a>
+======================================================
+   3.4.12 - fontUnderline
+======================================================
+
+    Prototype:    
+        declare function fontUnderline% (byval underlined as integer)
+                                  
+    Arguments:
+        [in] underlined     - true (-1), false (0)
+        
+    Returns:    
+    Returns the current setting
+
+    Description:
+    Sets wether or not to underline text drawn
+    using fontTextOut and returns the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.13"></a>
+======================================================
+   3.4.13 - fontSetUnderline
+======================================================
+
+    Prototype:    
+        declare sub fontSetUnderline alias "fontUnderline" _
+                             (byval underlined as integer)
+                                  
+    Arguments:
+        [in] underlined     - true (-1), false (0)
+        
+    Returns:    
+    Nothing
+
+    Description:
+    Same as fontUnderline except it doesn't 
+    return the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.14"></a>
+======================================================
+   3.4.14 - fontGetUnderline
+======================================================
+
+    Prototype:    
+        declare function fontGetUnderline% ()
+                                  
+    Arguments:
+        none
+        
+    Returns:    
+    Returns the current setting
+
+    Description:
+    Returns the current underline setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.15"></a>
+======================================================
+   3.4.15 - fontStrikeOut
+======================================================
+
+    Prototype:    
+        declare function fontStrikeOut% (byval strikedout as integer)
+                                  
+    Arguments:
+        [in] strikedout     - true (-1), false (0)
+        
+    Returns:    
+    Returns the current setting
+
+    Description:
+    Sets wether or not to strikeout text drawn
+    using fontTextOut and returns the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.16"></a>
+======================================================
+   3.4.16 - fontSetStrikeOut
+======================================================
+
+    Prototype:    
+        declare sub fontSetStrikeOut alias "fontStrikeOut" _
+                             (byval strikedout as integer)
+                                  
+    Arguments:
+        [in] strikedout     - true (-1), false (0)
+        
+    Returns:    
+    Nothing
+
+    Description:
+    Same as fontStrikeOut except it doesn't 
+    return the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.17"></a>
+======================================================
+   3.4.17 - fontGetStrikeOut
+======================================================
+
+    Prototype:    
+        declare function fontGetStrikeOut% ()
+                                  
+    Arguments:
+        none
+        
+    Returns:    
+        Returns the current setting
+
+    Description:
+        Returns the current strikeout setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.18"></a>
+======================================================
+   3.4.18 - fontOutline
+======================================================
+
+    Prototype:    
+        declare function fontOutline% (byval outline as integer)
+                                  
+    Arguments:
+        [in] outline     - true (-1), false (0)
+        
+    Returns:    
+        Returns the current setting
+
+    Description:
+        Sets wether or not to outline text drawn
+        using fontTextOut and returns the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.19"></a>
+======================================================
+   3.4.19 - fontSetOutline
+======================================================
+
+    Prototype:    
+        declare sub fontSetOutline alias "fontOutline" _
+                             (byval outline as integer)
+                                  
+    Arguments:
+        [in] outline      - true (-1), false (0)
+        
+    Returns:    
+        Nothing
+
+    Description:
+        Same as fontOutline except it doesn't 
+        return the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.20"></a>
+======================================================
+   3.4.20 - fontGetOutline
+======================================================
+
+    Prototype:    
+        declare function fontGetOutline% ()
+                                  
+    Arguments:
+        none
+        
+    Returns:    
+        Returns the current setting
+
+    Description:
+        Returns the current outline setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.21"></a>
+======================================================
+   3.4.21 - fontBGMode
+======================================================
+
+    Prototype:    
+        declare function fontBGMode% (byval bgmode as integer)
+                                  
+    Arguments:
+        [in] bgmode     - bg mode (FONT.BG.TRANSPARENT or
+                                   FONT.BG.OPAQUE)
+        
+    Returns:    
+        Returns the current setting
+
+    Description:
+        Set the text background mode to use and returns
+        the current setting.
+    
+    
+    Example:
+        none
+        
+        
+<a name="3.4.22"></a>
+======================================================
+   3.4.22 - fontSetBGMode
+======================================================
+
+    Prototype:    
+        declare sub fontSetBGMode alias "fontBGMode" _
+                          (byval bgmode as integer)
+                                  
+    Arguments:
+        [in] bgmode     - bg mode (FONT.BG.TRANSPARENT or
+                                   FONT.BG.OPAQUE)
+        
+    Returns:    
+        Nothing
+
+    Description:
+        Same as fontBGMode except it doesn't 
+        return the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.23"></a>
+======================================================
+   3.4.23 - fontGetBGMode
+======================================================
+
+    Prototype:    
+        declare function fontGetBGMode% ()
+                                  
+    Arguments:
+        none
+        
+    Returns:    
+        Returns the current setting
+
+    Description:
+        Returns the current font background setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.24"></a>
+======================================================
+   3.4.24 - fontBGColor
+======================================================
+
+    Prototype:    
+        declare function fontBGColor& (byval bgcol as long)
+                                  
+    Arguments:
+        [in] bgcol      - background color to use
+        
+    Returns:    
+        Returns the current background color
+
+    Description:
+        Set the text background color to use and returns
+        the current setting.
+    
+    
+    Example:
+        none
+        
+        
+<a name="3.4.25"></a>
+======================================================
+   3.4.25 - fontSetBGColor
+======================================================
+
+    Prototype:    
+        declare sub fontSetBGColor alias "fontBGColor" _
+                                 (byval bgcol as long)
+                                  
+    Arguments:
+        [in] bgcol      - background color to use
+        
+    Returns:    
+        Nothing
+
+    Description:
+        Same as fontBGColor except it doesn't 
+        return the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.26"></a>
+======================================================
+   3.4.26 - fontGetBGColor
+======================================================
+
+    Prototype:    
+        declare function fontGetBGColor& ()
+                                  
+    Arguments:
+        none
+        
+    Returns:    
+        Returns the current setting
+
+    Description:
+        Returns the current font background color.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.27"></a>
+======================================================
+   3.4.27 - fontSize
+======================================================
+
+    Prototype:    
+        declare function fontSize% (byval size as integer)
+                                  
+    Arguments:
+        [in] size      - size in points of the glyphs
+        
+    Returns:    
+        Returns the current glyph size
+
+    Description:
+        Set the glyph size to use and returns
+        the current setting.
+    
+    
+    Example:
+        none
+        
+        
+<a name="3.4.28"></a>
+======================================================
+   3.4.28 - fontSetSize
+======================================================
+
+    Prototype:    
+        declare sub fontSetSize alias "fontSize" _
+                         (byval size as integer)
+                                  
+    Arguments:
+        [in] size      - size in points of the glyphs
+        
+    Returns:    
+        Nothing
+
+    Description:
+        Same as fontSize except it doesn't 
+        return the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.29"></a>
+======================================================
+   3.4.29 - fontGetSize
+======================================================
+
+    Prototype:    
+        declare function fontGetSize% ()
+                                  
+    Arguments:
+        none
+        
+    Returns:    
+        Returns the current setting
+
+    Description:
+        Returns the current glyph size.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.30"></a>
+======================================================
+   3.4.30 - fontAngle
+======================================================
+
+    Prototype:    
+        declare function fontAngle% (byval angle as integer)
+                                  
+    Arguments:
+        [in] angle      -  0 >= angle <= 359 
+        
+    Returns:    
+        Returns the current angle
+
+    Description:
+        Set the angle to draw the text and returns
+        the current setting.
+    
+    
+    Example:
+        none
+        
+        
+<a name="3.4.31"></a>
+======================================================
+   3.4.31 - fontSetAngle
+======================================================
+
+    Prototype:    
+        declare sub fontSetAngle alias "fontAngle" _
+                           (byval angel as integer)
+                                  
+    Arguments:
+        [in] angle      -  0 >= angle <= 359 
+        
+    Returns:    
+        Nothing
+
+    Description:
+        Same as fontAngle except it doesn't 
+        return the current setting.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.32"></a>
+======================================================
+   3.4.32 - fontGetAngle
+======================================================
+
+    Prototype:    
+        declare function fontGetAngle% ()
+                                  
+    Arguments:
+        none
+        
+    Returns:    
+        Returns the current setting
+
+    Description:
+        Returns the current angle.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.33"></a>
+======================================================
+   3.4.33 - fontWidth
+======================================================
+
+    Prototype:    
+        declare function fontWidth% (text as string, _
+                                     byval uFont as long)
+                                  
+    Arguments:
+        [in] text       - Text to measure
+             uFont      - Handle to font
+             
+    Returns:    
+        The width of the text in pixels
+
+    Description:
+        This routine is used to find out how many
+        pixels wide the text will be when it's drawn.
+    
+    Example:
+        none
+        
+        
+<a name="3.4.34"></a>
+======================================================
+   3.4.34 - fontTextOut
+======================================================
+
+    Prototype:    
+        declare sub fontTextOut (byval dc as long, byval x as long, _
+                                 byval y as long, byval clr as long, _
+                                 byval uFont as long, text as string)
+                                  
+    Arguments:
+        [in] dc         - Destination DC
+             x, y       - Destination coords
+             clr        - Color to draw the text in
+             uFont      - Handle to font 
+             text       - The text to draw
+
+        
+    Returns:    
+        Nothing
+
+    Description:
+        Draws text using a UVF/UBF font on a DC.
+    
+    Example:
+        none
+        
+        
+<a name="3.5.1"></a>
+======================================================
+   3.5.1 - tmrInit
+======================================================
+
+    Prototype:    
+        declare sub tmrInit ()
+                                  
+    Arguments:
+        none
+                
+    Returns:    
+        Nothing
+
+    Description:
+        Sets up the timer ISR, has to be called before
+        trying to use a µGL timer. Do _not_ use QB's PLAY
+        routine or the PIT will be reprogrammed and the ISR
+        won't stay in control of this module.
+    
+    Example:
+        timer.bas
+        
+        
+<a name="3.5.2"></a>
+======================================================
+   3.5.2 - tmrEnd
+======================================================
+
+    Prototype:    
+        declare sub tmrEnd ()
+                                  
+    Arguments:
+        none
+                
+    Returns:    
+        Nothing
+
+    Description:
+        This routine removes the µGL timer ISR and
+        restores the old one. Once the program is 
+        compiled it's no longer needed to call this
+        routine. It will be invoked automatically.
+    
+    Example:
+        timer.bas
+        
+        
+<a name="3.5.3"></a>
+======================================================
+   3.5.3 - tmrNew
+======================================================
+
+    Prototype:    
+        declare sub tmrNew (seg t as TMR, byval mode as integer,_
+                            byval rate as long)
+                                  
+    Arguments:
+       [out] t                 - TMR struct to add to queue
+        [in] mode              - Timer mode (AUTOINIT, ONESHOT)
+             rate              - The timer rate in Hertz
+       
+                
+    Returns:    
+        Nothing
+
+    Description:
+        Creates a new timer, but there are few things you
+        should consider.
+        
+        - Never declare the struct using redim or $dynamic.
+          You should only declare it with dim and put $static
+          before it if you've declared $dynamic before.
+          
+        - Never access TMR's fields but the 'state' one (for 
+          read-only), and the 'counter' field (for AUTOINIT 
+          timers); messing with other fields can leave the 
+          system unstable.
+          
+        - If the TMR struct is already active it will be 
+          deleted from the queue and readded.
+          
+        - How timers will operate, depending on 'mode' selected:
+            * ONESHOT: when the timer expires, its deleted
+              from active timers queue and its state field
+              is changed to TMR.OFF; to reactive it again,
+              a new call to tmrNew must to be done.
+
+            * AUTOINIT: when the timer expires, its re-added
+              to active timers queue and its counter field
+              is incremented by 1; that keeps going until the
+              timer is delete or paused.
+    
+    Example:
+        timer.bas
+        
+        
+<a name="3.5.4"></a>
+======================================================
+   3.5.4 - tmrDel
+======================================================
+
+    Prototype:    
+        declare sub tmrDel (seg t as TMR)
+                                  
+    Arguments:
+        [in] t                 - TMR struct to delete 
+                                 from the queue
+                                                                                  
+    Returns:    
+        Nothing
+
+    Description:
+        Deletes a timer that was created with tmrNew.
+    
+    Example:
+        none
+        
+        
+<a name="3.5.5"></a>
+======================================================
+   3.5.5 - tmrPause
+======================================================
+
+    Prototype:    
+        declare sub tmrPause alias "tmrDel" (seg t as TMR)
+                                  
+    Arguments:
+        [in] t                 - TMR struct to delete 
+                                 from the queue
+                                                                                  
+    Returns:    
+        Nothing
+
+    Description:
+        Pauses (deletes) a timer.
+    
+    Example:
+        none
+        
+        
+<a name="3.5.6"></a>
+======================================================
+   3.5.6 - tmrResume
+======================================================
+
+    Prototype:    
+        declare sub tmrResume (seg t as TMR)
+                                  
+    Arguments:
+        [in] t                  - TMR struct to resume
+
+    Returns:    
+        Nothing
+
+    Description:
+        Resumes a paused timer.
+    
+    Example:
+        none
+        
+        
+<a name="3.5.7"></a>
+======================================================
+   3.5.7 - tmrUs2Freq
+======================================================
+
+    Prototype:    
+        declare function tmrUs2Freq& (byval microsecs as long)
+                                  
+    Arguments:
+        [in] microsecs          - microseconds to convert
+
+    Returns:    
+        The equalent to the PIT rate (Hertz)
+
+    Description:
+        Converts micro-seconds to the PIT rate which
+        is in hertz.
+    
+    Example:
+        timer.bas
+        
+        
+<a name="3.5.8"></a>
+======================================================
+   3.5.8 - tmrMs2Freq
+======================================================
+
+    Prototype:    
+        declare function tmrMs2Freq& (byval millisecs as long)
+                                  
+    Arguments:
+        [in] millisecs          - milliseconds to convert
+
+    Returns:    
+        The equalent to the PIT rate (Hertz)
+
+    Description:
+        Converts milli-seconds to the PIT rate which
+        is in hertz.
+    
+    Example:
+        timer.bas
+        
+        
+<a name="3.5.9"></a>
+======================================================
+   3.5.9 - tmrTick2Freq
+======================================================
+
+    Prototype:    
+        declare function tmrTick2Freq& (byval ticks as long)
+                                  
+    Arguments:
+        [in] ticks              - ticks to convert
+
+    Returns:    
+
+        The equalent to the PIT rate (Hertz)
+
+    Description:
+        Converts ticks (55ms) to the PIT rate which
+        is in hertz.
+    
+    Example:
+        timer.bas
+        
+        
+<a name="3.5.10"></a>
+======================================================
+   3.5.10 - tmrSec2Freq
+======================================================
+
+    Prototype:    
+        declare function tmrSec2Freq& (byval secs as long)
+                                  
+    Arguments:
+        [in] secs              - seconds to convert
+
+    Returns:    
+        The equalent to the PIT rate (Hertz)
+
+    Description:
+        Converts seconds to the PIT rate which
+        is in hertz.
+    
+    Example:
+        timer.bas
+        
+        
+<a name="3.5.11"></a>
+======================================================
+   3.5.11 - tmrMin2Freq
+======================================================
+
+    Prototype:    
+        declare function tmrMin2Freq& (byval mins as long)
+                                  
+    Arguments:
+        [in] mins              - minutes to convert
+
+    Returns:    
+        The equalent to the PIT rate (Hertz)
+
+    Description:
+        Converts minutes to the PIT rate which
+        is in hertz.
+    
+    Example:
+        timer.bas
+        
+
+
+        
+<a name="3.6.1"></a>
+======================================================
+   3.6.1 - sndInit
+======================================================
+
+    Prototype:    
+        declare function sndInit% (byval port as integer, _
+                                   byval irq as integer, _
+                                   byval ldma as integer, _
+                                   byval hdma as integer)
+                                  
+    Arguments:
+        [in] port              - SB base port 
+             irq               - SB Irq
+             ldma              - SB 8 bit dma channel
+             hdma              - SB 16 bit dma channel
+
+    Returns:    
+        false (0) if failed, true (-1) for OK.
+
+    Description:
+        Inits the sound module.
+        If you pass false (0) as the port argument it
+        will try to autodetect. However, this only works
+        on SB 16 (or compatibles) and better.
+        
+        The standard way of getting the sb settings is 
+        through the BLASTER enviroment variable. There's
+        a routine for doing this in the sound.bas example.
+        
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        exs\sound.bas
+                
+        
+        
+<a name="3.6.2"></a>
+======================================================
+   3.6.2 - sndEnd
+======================================================
+
+    Prototype:    
+        declare sub sndEnd ()
+                                  
+    Arguments:
+        none
+
+    Returns:    
+        nothing
+
+    Description:
+        Deinits the sound module, if you're calling uglEnd
+        already you don't have to call sndEnd.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        exs\sound.bas
+                
+        
+        
+<a name="3.6.3"></a>
+======================================================
+   3.6.3 - sndOpenOutput
+======================================================
+
+    Prototype:    
+        declare function sndOpenOutput% ( byval frmt as integer, _
+                                          byval freq as long, _
+                                          byval bps as integer )
+                                                                                      
+    Arguments:
+        [in] frmt              - The output format
+                                    snd.s8.mono
+                                    snd.s8.stereo
+                                    snd.s16.mono
+                                    snd.s16.stereo
+             freq              - The output frequency
+             bps               - The beats per second setting,
+                                 usally 50 is good
+
+    Returns:    
+        true (-1) if everything ok, false (0) otherwise
+
+    Description:
+        Sets the soundblaster up for output. The output
+        format and rate is in no way dependent on the samples
+        you playback rate and format. 
+        
+        Here's what each SB series supports:
+            SB 1.0 - 2.0:       8 bit,  mono,   4000Hz-23000Hz
+            SB 2.01:            8 bit,  mono,   4000Hz-44100Hz
+            SB Pro:             8 bit,  mono,   4000Hz-44100Hz
+                                8 bit,  stereo, 11025Hz-22050Hz
+            SB 16:              8 bit,  mono,   5000Hz-44100Hz
+                                8 bit,  stereo, 5000Hz-44100Hz
+                                16 bit, mono,   5000Hz-44100Hz
+                                16 bit, stereo, 5000Hz-44100Hz
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        exs\sound.bas
+                
+        
+        
+<a name="3.6.4"></a>
+======================================================
+   3.6.4 - sndPlay
+======================================================
+
+    Prototype:    
+        declare sub sndPlay ( seg voice as sndvoice, _
+                              byval sample as long )
+
+    Arguments:
+        [in] voice            - The voice to start playback on
+             sample           - The sample to playback
+
+    Returns:    
+        nothing
+
+    Description:
+        Start playback of a sample on a voice. A voice
+        is just another word for a channel. So don't get
+        confused here :)
+        
+        You are not restricted to any fixed number of 
+        voices, the only limit is memory.        
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        exs\sound.bas
+                
+        
+        
+<a name="3.6.5"></a>
+======================================================
+   3.6.5 - sndPlayEx
+======================================================
+
+    Prototype:    
+        declare sub sndPlayEx ( seg voice as sndvoice, _
+                                byval sample as long, _
+                                byval smprate as long, _
+                                byval pan as integer, _
+                                byval vol as integer, _
+                                byval direction as integer, _
+                                byval mode as integer )
+
+    Arguments:
+        [in] voice            - The voice to start playback on
+             sample           - The sample to playback
+             smprate          - Frequency to playback at (pitch)
+             pan              - The voice pan 
+                                    -256 is completly left
+                                     256 is completly righ
+             vol              - The volume (0-256)
+             direction        - Playback direction
+                                    snd.up,   forward
+                                    snd.down, backward
+             mode             - Loop mode
+                                    snd.onetime, play once
+                                    snd.repeat,  restart once played
+                                    snd.pingpong,backward once played
+                                    
+    Returns:    
+        nothing
+
+    Description:
+        As sndPlay but with more options        
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+                
+        
+        
+<a name="3.6.6"></a>
+======================================================
+   3.6.6 - sndPause
+======================================================
+
+    Prototype:    
+        declare sub sndPause ( seg voice as sndvoice )
+
+    Arguments:
+        [in] voice            - The voice to pause
+
+    Returns:    
+        nothing
+
+    Description:
+        Pauses the playback of a voice.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+                
+        
+        
+<a name="3.6.7"></a>
+======================================================
+   3.6.7 - sndResume
+======================================================
+
+    Prototype:    
+        declare sub sndResume ( seg voice as sndvoice )
+
+    Arguments:
+        [in] voice            - The voice to resume
+
+    Returns:    
+        nothing
+
+    Description:
+        Resumes playback of a paused voice.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+                
+        
+        
+<a name="3.6.8"></a>
+======================================================
+   3.6.8 - sndStop
+======================================================
+
+    Prototype:    
+        declare sub sndStop ( seg voice as sndvoice )
+
+    Arguments:
+        [in] voice            - The voice to stop
+
+    Returns:    
+        nothing
+
+    Description:
+        Stops playback of a voice.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+                
+        
+        
+<a name="3.6.9"></a>
+======================================================
+   3.6.9 - sndNewWav
+======================================================
+
+    Prototype:    
+        declare function sndNewWav& ( byval bufftype as integer, _
+                                      filename as string )
+
+    Arguments:
+        [in] bufftype         - snd.mem or snd.ems
+             filename         - path and filename of wave file
+
+    Returns:    
+        A 32-bit (4 bytes/long) handle to the sample.
+        If the handle is equal to false (0) it failed to load it.
+
+    Description:
+        Loads a wave file. As any other µGL routine, it loads
+        directly from archives as well.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        exs\sound.bas
+                
+        
+        
+<a name="3.6.10"></a>
+======================================================
+   3.6.10 - sndNewRaw
+======================================================
+
+    Prototype:    
+        declare function sndNewRaw& ( byval bufftype as integer, _
+                                      byval smpfrmt as integer, _
+                                      byval smprate as long, _
+                                      byval sign as integer, _
+                                      filename as string, _
+                                      byval offset as long, _
+                                      byval length as long )
+
+    Arguments:
+        [in] bufftype         - snd.mem (mas 640 KB) or snd.ems (max 4MB)
+             smpfrmt          - The format of the raw sound
+                                    snd.s8.mono
+                                    snd.s8.stereo
+                                    snd.s16.mono
+                                    snd.s16.stereo
+             smprate          - The sample rate of the raw sound
+             sign             - Tells if the sound data is signed or not
+                                    snd.signed
+                                    snd.unsigned             
+             filename         - path and filename of wave file
+             offset           - The offset the sound data start at in
+                                the file
+             length           - Number of bytes to read from the offset.
+
+    Returns:    
+        A 32-bit (4 bytes/long) handle to the sample.
+        If the handle is equal to false (0) it failed to load it.
+
+    Description:
+        Loads a raw sound file. As any other µGL routine, it loads
+        directly from archives as well.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+                
+        
+        
+<a name="3.6.11"></a>
+======================================================
+   3.6.11 - sndNewRawEx
+======================================================
+
+    Prototype:    
+        declare function sndNewRawEx& ( byval bufftype as integer, _
+                                        byval smpfrmt as integer, _
+                                        byval smprate as long, _
+                                        byval sign as integer, _
+                                        seg hFile as UAR, _
+                                        byval offset as long, _
+                                        byval length as long )
+
+    Arguments:
+        [in] bufftype         - snd.mem (mas 640 KB) or snd.ems (max 4MB)
+             smpfrmt          - The format of the raw sound
+                                    snd.s8.mono
+                                    snd.s8.stereo
+                                    snd.s16.mono
+                                    snd.s16.stereo
+             smprate          - The sample rate of the raw sound
+             sign             - Tells if the sound data is signed or not
+                                    snd.signed
+                                    snd.unsigned             
+             hFile            - The handle of a file opened with fileOpen()
+             offset           - The offset the sound data start at in
+                                the file
+             length           - Number of bytes to read from the offset.
+
+    Returns:    
+        A 32-bit (4 bytes/long) handle to the sample.
+        If the handle is equal to false (0) it failed to load it.
+
+    Description:
+        Same as sndRaw except instead of the filename you give it
+        the handle of a file which has already been opened with
+        fileOpen() in the dos module. 
+        
+        NOTE: It preserves the file cursor, so the file cursor
+              won't have changed after it has been loaded.
+              
+        As any other µGL routine, it loads directly from archives
+        as well.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+                
+        
+        
+<a name="3.6.12"></a>
+======================================================
+   3.6.12 - sndDel
+======================================================
+
+    Prototype:    
+        declare sub sndDel ( byval sample as long )
+
+    Arguments:
+        [in] sample           - Handle to sample to unload
+
+
+    Returns:    
+        nothing
+
+    Description:
+        Unloads a sample.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+                
+        
+        
+<a name="3.6.13"></a>
+======================================================
+   3.6.13 - sndSetInterp
+======================================================
+
+    Prototype:    
+        declare sub sndSetInterp ( byval mode as integer )
+
+    Arguments:
+        [in] mode             - Interpolation method
+                                    snd.nearest (default)
+                                    snd.linear
+                                    snd.cubic
+                                    
+    Returns:    
+        nothing
+
+    Description:
+        Sets the intepolation mode.
+        At the moment only snd.nearest is supported.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+                
+        
+        
+<a name="3.6.14"></a>
+======================================================
+   3.6.14 - sndMasterSetPan
+======================================================
+
+    Prototype:    
+        declare sub sndMasterSetPan ( byval pan as integer )
+
+    Arguments:
+        [in] mode             - Pan setting of the output
+                                    -256 completly left
+                                     256 completly right
+                                    
+    Returns:    
+        nothing
+
+    Description:
+        Sets the pan setting of the output.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+                
+        
+        
+<a name="3.6.15"></a>
+======================================================
+   3.6.15 - sndVoiceSetDefault
+======================================================
+
+    Prototype:    
+        declare sub sndMasterSetPan ( seg voice as sndvoice )
+
+    Arguments:
+        [in] voice            - The voice to init
+                                    
+    Returns:    
+        nothing
+
+    Description:
+        Inits a voice, a voice has to be init before it 
+        can be used.
+                
+        A voice is just another word for a channel if you 
+        were wondering.                
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        exs\sound.bas
+                
+        
+        
+<a name="3.6.16"></a>
+======================================================
+   3.6.16 - sndVoiceSetSample
+======================================================
+
+    Prototype:    
+        declare sub sndVoiceSetSample ( seg voice as sndvoice, _
+                                        byval sample as long )
+
+    Arguments:
+        [in] voice            - The voice to set the sample for
+             sample           - The sample which will be played
+                                back on the voice.
+
+    Returns:    
+        nothing
+
+    Description:
+        Set the sample which will be played back on the voice.
+        Has no real use right now :)
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.6.17"></a>
+======================================================
+   3.6.17 - sndVoiceSetDir
+======================================================
+
+    Prototype:    
+        declare sub sndVoiceSetDir ( seg voice as sndvoice, _
+                                     byval direction as long )
+
+    Arguments:
+        [in] voice            - The voice which the playback direction
+                                will be set for.
+             direction        - The playback direction
+                                    snd.up,   forward
+                                    snd.down, backward
+
+    Returns:    
+        nothing
+
+    Description:
+        Set the playback direction of a voice.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.6.18"></a>
+======================================================
+   3.6.18 - sndVoiceSetLoopMode
+======================================================
+
+    Prototype:    
+        declare sub sndVoiceSetLoopMode ( seg voice as sndvoice, _
+                                          byval mode as integer )
+
+    Arguments:
+        [in] voice            - The voice which the loop mode will
+                                be set for                                
+             mode             - The loop mode
+                                    snd.onetime,  play once
+                                    snd.repeat,   repeat
+                                    snd.pingpong, play the other direction
+                                                  once the start/end has been
+                                                  reached
+
+    Returns:    
+        nothing
+
+    Description:
+        Set the loop mode of a voice.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.6.19"></a>
+======================================================
+   3.6.19 - sndVoiceSetLoopPoints
+======================================================
+
+    Prototype:    
+        declare sub sndVoiceSetLoopPoints ( seg voice as sndvoice, _
+                                            byval lstr as integer, _ 
+                                            byval lend as integer )
+
+    Arguments:
+        [in] voice            - The voice which the loop points for.
+             lstr             - Loop start offset
+             lend             - Loop end offset
+
+    Returns:    
+        nothing
+
+    Description:
+        Set the loop points of a voice.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.6.20"></a>
+======================================================
+   3.6.20 - sndVoiceSetVol
+======================================================
+
+    Prototype:    
+        declare sub sndVoiceSetVol ( seg voice as sndvoice, _
+                                     byval vol as integer )
+
+    Arguments:
+        [in] voice            - The voice which the volume will
+                                be set for.
+             vol              - 0-256
+
+    Returns:    
+        nothing
+
+    Description:
+        Set the volume of a voice.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.6.21"></a>
+======================================================
+   3.6.21 - sndVoiceSetPan
+======================================================
+
+    Prototype:    
+        declare sub sndVoiceSetPan ( seg voice as sndvoice, _
+                                     byval pan as integer )
+
+    Arguments:
+        [in] voice            - The voice which the volume will
+                                be set for.
+             pan              - The pan of the voice
+                                    -256 completly left
+                                     256 completly right
+
+    Returns:    
+        nothing
+
+    Description:
+        Set the pan of a voice.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.6.22"></a>
+======================================================
+   3.6.22 - sndVoiceSetRate
+======================================================
+
+    Prototype:    
+        declare sub sndVoiceSetRate ( seg voice as sndvoice, _
+                                      byval rate as long )
+
+    Arguments:
+        [in] voice            - The voice which the frequency will
+                                be set for.
+             rate             - The playback frequency (pitch) of the voice
+                                    4000-48000
+
+    Returns:    
+        nothing
+
+    Description:
+        Set the playback frequency of a voice.
+    
+    Headerfile: 
+        inc\snd.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.10.1"></a>
+======================================================
+   3.10.1 - emsAlloc
+======================================================
+
+    Prototype:    
+        declare function emsAlloc% ( byval bytes as long )
+
+    Arguments:
+        [in] bytes            - Bytes to allocate
+
+    Returns:
+        The ems handle on succses and false (0) oterwise        
+
+    Description:
+        Allocates ems memory.
+        
+        Note:
+            The handle returned can not be used with the
+            ems interrupt. Or other non µGL ems routines.
+            
+            
+    Headerfile: 
+        inc\ems.bi
+        
+    Example:
+        none        
+        
+        
+        
+<a name="3.10.2"></a>
+======================================================
+   3.10.2 - emsCalloc
+======================================================
+
+    Prototype:    
+        declare function emsCalloc% ( byval bytes as long )
+
+    Arguments:
+        [in] bytes            - Bytes to allocate
+
+    Returns:
+        The ems handle on succses and false (0) oterwise
+
+    Description:
+        Does the same thing as emsAlloc, except that it
+        clears the allocated ems memory with the value
+        zero.
+        
+        Note:
+            The handle returned can not be used with the
+            ems interrupt. Or other non µGL ems routines.
+            
+            
+    Headerfile: 
+        inc\ems.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.10.3"></a>
+======================================================
+   3.10.3 - emsAvail
+======================================================
+
+    Prototype:    
+        declare function emsAvail& ( )
+
+    Arguments:
+        none
+
+    Returns:
+        The size of the largest free ems block
+
+    Description:
+        This is used to check how large the biggest free
+        ems block is.            
+            
+    Headerfile: 
+        inc\ems.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.10.4"></a>
+======================================================
+   3.10.4 - emsFree
+======================================================
+
+    Prototype:    
+        declare sub emsFree ( byval handle as integer )
+
+    Arguments:
+        [in] handle           - Handle of an allocated ems 
+                                block
+                                
+    Returns:
+        nothing
+
+    Description:
+        Frees allocated ems memory.
+            
+    Headerfile: 
+        inc\ems.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.10.5"></a>
+======================================================
+   3.10.5 - emsMap
+======================================================
+
+    Prototype:    
+        declare function emsMap% ( byval hnd as integer, _ 
+                                   byval offs as long, _  
+                                   byval bytes as long )
+
+    Arguments:
+        [in] hnd              - Handle to the ems block
+             offs             - The offset in bytes on where to
+                                start mapping
+             bytes            - Bytes to map 16384 - 65536 bytes
+                                
+    Returns:
+        The segment of the mapped memory on success 
+        and false (0) if the map failed.            
+
+    Description:
+        This routine maps ems memory.
+        
+        Notes:
+            EMS works in pages, each page is 16384 byte or 16 kb
+            in otherwords. So when you map memory you always have
+            to map starting on the first byte on a page. 
+            
+            This sounds tricky, but it's not. To calculate what 
+            page the offset you want to access is on you have to
+            divide the offset with 16384. But emsMap needs the offset
+            in bytes on a page boundry. And not the actual page number.
+            So you have to turn the page number to an offset. This is
+            done by multiplying with 16384. Now you have the offset on
+            page boundry. 
+            
+            Basically what you've done is clear the low 14 bits of the 
+            offset. A simpler way to do the same thing is to AND the 
+            offset with &hffff4000. This will also give you the offset
+            on page boundry.
+            
+            So how will you know if the last byte you want to access is
+            on the same page as the mapped page? Simple, just add the 
+            number of bytes you want to read/write to the offset and
+            AND it with &hffff4000. If this adress is the same as the 
+            last page you're mapping then you're safe. If it's not you
+            need to map the next page as well. But remember that you 
+            can map only a maximum of 4 pages (64 kb).
+            
+            Now, if you're mapping on page boundry. Then the first mapped
+            byte isn't the first byte you wanted is it? No it isn't. 
+            You get the offset you need to start reading at by subtracting
+            the original offset in the ems memory to the offset of the 
+            first page you mapped.
+            
+            So how do you convert all this to a dos (real mode) memory
+            adress? You calculate the physical adress then convert it 
+            back to the a dos (real mode) far pointer.
+            
+            Here a short example
+            
+            dim pagea as long
+            dim pageb as long
+            dim linear as long
+            dim offset as long
+            dim mapseg as integer
+            dim datseg as integer, datofs as integer
+            
+            
+            ''
+            '' Just making an offset up
+            ''
+            offset = 567434&
+            
+            
+            ''
+            '' We want to map 15000 bytes, so calculate
+            '' the offsets (on page boundry) of the first
+            '' and last byte we want to map.
+            ''
+            pagea = offset and &hffff4000
+            pageb = (offset+15000) and &hffff4000
+            
+            
+            ''
+            '' Now to map the memory, if the first and 
+            '' last byte aren't on the same page we need
+            '' to map one extra page. In this case we're only
+            '' mapping one page. So with the extra page it'll 
+            '' be two pages.
+            ''
+            if ( pagea = pageb ) then
+                mapseg = emsMap( emshndl, pagea, 16384 )
+            else
+                mapseg = emsMap( emshndl, pagea, 32768 )
+            end if
+            
+            ''
+            '' Check if we were able to map
+            ''
+            if ( mapseg = false ) then
+                ''
+                '' Map failed, do error handling
+                ''
+            end if             
+            
+            ''
+            '' Calculate the normalized adress
+            ''
+            linear = mapseg * 16& + (offset-pagea)
+            datseg = linear \ 16&
+            datofs = linear and 15&
+            
+            ''
+            '' Now we can do whatever we want with those
+            '' 15000 bytes that we mapped :)
+            ''
+            def seg = datseg
+            for  i = 0 to 15000
+                poke datofs+i, 0
+            next i        
+            
+    Headerfile: 
+        inc\ems.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.10.6"></a>
+======================================================
+   3.10.6 - emsSave
+======================================================
+
+    Prototype:    
+        declare function emsSave% ( seg ctx as EMSSAVECTX )
+
+    Arguments:
+        [in] ctx              - The ems save context
+                                
+    Returns:
+        false (0) if save failed.
+
+    Description:
+        This routine is used for saving the state of the
+        ems context. It can later be restored with emsRestore.
+        
+        Now, you might wonder what this could be good for. 
+        Well, sometimes you code things such as interrupts
+        which will be called and interrupt the cpu with what
+        it's doing. Once the cpu returns from the interrupt it
+        will go back doing what it did last. And if this happens
+        to be something that had to do with ems it won't have 
+        the slighest idea that the mapped page has been changed. 
+        So it will go on using the data that the interrupt
+        mapped thinking it's what it mapped. So this is why
+        you sometimes have to save the ems context.
+            
+    Headerfile: 
+        inc\ems.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.10.7"></a>
+======================================================
+   3.10.7 - emsRestore
+======================================================
+
+    Prototype:    
+        declare function emsRestore% ( seg ctx as EMSSAVECTX )
+
+    Arguments:
+        [in] ctx              - The ems save context
+                                
+    Returns:
+        false (0) if restore failed.
+
+    Description:
+        Restores a saved ems context.
+        
+    Headerfile: 
+        inc\ems.bi
+        
+    Example:
+        none
+        
+        
+        
+<a name="3.10.8"></a>
+======================================================
+   3.10.8 - emsCheck
+======================================================
+
+    Prototype:    
+        declare function emsCheck% ()
+
+    Arguments:
+        none
+                                
+    Returns:
+        true (-1) if there is an ems driver, false (0) 
+        oterwise.
+
+    Description:
+        Checks for a ems driver.
+        
+    Headerfile: 
+        inc\ems.bi
+        
+    Example:
+        none
+        
+        </pre>
+    </body>
+</html>

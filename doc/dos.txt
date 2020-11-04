@@ -1,0 +1,436 @@
+:::
+   name: bfileOpen
+   desc: opens a existent or create a new file and attach a buffer to it
+  
+   type: function
+   args: [out] bf:BFILE         | BFILE structure w/ info about the file
+          [in] fname:string,    | file name
+               mode:integer,    | mode (CREATE, APPEND, READ, WRITE, RW)
+  	       buffSize:long	| buffer size (max 65532 bytes)
+   retn: integer                | TRUE if ok, FALSE otherwise
+  
+   decl: bfileOpen% (seg bf as BFILE,_
+                     fname as string, byval mode as integer,_
+  		     byval buffSize as long)
+  
+   chng: sep/01 written [v1ctor]
+   obs.: none
+
+:::
+   name: bfileClose
+   desc: closes a file previously opened by bfileOpen and delete the buffer 
+  	 allocated for it
+  
+   type: sub
+   args: [in] bf:BFILE		| BFILE structure of file to close
+   retn: none
+  
+   decl: bfileClose (seg bf as BFILE)
+  
+   chng: sep/01 [v1ctor]
+   obs.: if any write was done to the file, this function have to be called
+         at the end, or the buffer could not be flushed to disk
+
+:::
+   name: bfileBegin
+   desc: starts buffering a file opened _not_ using bfileOpen
+  
+   type: function
+   args: [in/out] bf:BFILE      | BFILE structure w/ info about the file
+          [in] buffer:long,     | buffer far pointer to attach with file
+  	       buffSize:long	| buffer size (max 65532 bytes)
+   retn: integer                | TRUE if ok, FALSE otherwise
+  
+   decl: bfileBegin% (seg bf as BFILE,_
+                      byval buffer as long,_
+  		      byval buffSize as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: bfileEnd
+   desc: flushes the buffer contents to file if need and correct file pointer
+  	 position
+  
+   type: sub
+   args: [in] bf:BFILE		| BFILE structure of file
+   retn: none
+  
+   decl: bfileEnd (seg bf as BFILE)
+  
+   chng: sep/01 [v1ctor]
+   obs.: file is _not_ closed _nor_ buffer is deallocated
+
+:::
+   name: bfileRead
+   desc: reads a block of data from a file to memory
+  
+   type: function
+   args: [in] bf:BFILE,       	| BFILE structure of file to read
+              dst:long,         | far address of destine memory block
+              bytes:long        | number of bytes to read (< 64K)
+   retn: long                   | number of bytes read (0 if error)
+  
+   decl: bfileRead& (seg bf as BFILE, byval dst as long,_
+                     byval bytes as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: bfileRead1, bfileRead2, bfileRead4
+   desc: reads a bytes, word or dword from a file
+  
+   type: function
+   args: [in] bf:BFILE          | BFILE structure of file to read
+   retn: integer,long           | bytes, word or dword read
+  
+   decl: bfileRead1% (seg bf as BFILE)
+         bfileRead2% (seg bf as BFILE)
+  	 bfileRead4& (seg bf as BFILE)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: bfileWrite
+   desc: writes a block of data from memory to a file
+  
+   type: function
+   args: [in] bf:BFILE,         | BFILE structure of file to write
+              src:long,         | linear address of source memory block
+              bytes:long        | number of bytes to write (< 64K)
+   retn: long                   | number of bytes written (0 if error)
+  
+   decl: bfileWrite& (seg bf as BFILE, byval src as long,_
+                      byval bytes as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: bfileWrite1, bfileWrite2, bfileWrite4
+   desc: writes a bytes, word or dword to a file
+  
+   type: function
+   args: [in] bf:BFILE,         | BFILE structure of file to write
+              value:integer,long| byte, word or dword to write
+   retn: integer                | number of bytes written (0 if error)
+  
+   decl: bfileWrite1% (seg bf as BFILE, byval value as integer)
+         bfileWrite2% (seg bf as BFILE, byval value as integer)
+  	 bfileWrite4% (seg bf as BFILE, byval value as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: bfileEOF
+   desc: checks if at end of file
+  
+   type: function
+   args: [in] Bf:BFILE          | BFILE structure of file to check
+   retn: integer                | -1 if EOF, 0 otherwise
+  
+   decl: bfileEOF% (seg bf as BFILE)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: bfilePos
+   desc: gets the current file pointer position
+  
+   type: function
+   args: [in] bf:BFILE          | BFILE structure of file to get position
+   retn: long                   | current position (-1 if error)
+  
+   decl: bfilePos& (seg bf as BFILE)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: bfileSize
+   desc: gets the current file size
+  
+   type: function
+   args: [in] bf:BFILE          | BFILE structure of file to get the size
+   retn: long                   | current size (-1 if error)
+  
+   decl: bfileSize& (seg bf as BFILE)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: bfileSeek
+   desc: changes the file pointer position
+  
+   type: function
+   args: [in] bf:BFILE,         | BFILE structure of file to seek
+              origin:integer,   | seek origin: from start, current or end
+              bytes:long        | distance from origin (signed)
+   retn: long                   | position after seek (-1 if error)
+  
+   decl: bfileSeek& (seg bf as BFILE,_
+                     byval origin as integer,_
+                     byval bytes as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: memAlloc
+   desc: allocates a block of conventional memory
+  
+   type: function
+   args: [in] bytes:long       | number of bytes to allocate
+   retn: long                  | far pointer of block (0 if error)
+  
+   decl: memAlloc& (byval bytes as long)
+  
+   chng: sep/01 written [v1ctor]
+   obs.: none
+
+:::
+   name: memAvail
+   desc: returns the size of the largest free block of conventional memory
+  
+   type: function
+   args: none
+   retn: long                  | largest free block size
+  
+   decl: memAvail& ()
+  
+   updt: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: memCalloc
+   desc: allocates a block of conventional memory and clears it
+  
+   type: function
+   args: [in] bytes:long       | number of bytes to allocate
+   retn: long                  | far pointer of block (0 if error)
+  
+   decl: memCalloc& (byval bytes as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: memFree
+   desc: frees a block of conventional memory
+  
+   type: sub
+   args: [in] farptr:long    	| memory block far pointer
+   retn: none
+  
+   decl: memFree (byval farptr as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: memFill
+   desc: fills a block of conventional memory
+  
+   type: sub
+   args: [in] farptr:long,	| far pointer of block to fill
+  	      bytes:long,      	| number of bytes to fill (can be > 64k)
+  	      char:integer	| char to use
+   retn: none
+  
+   decl: memFill (byval farptr as long, byval bytes as long,_
+  		  byval char as integer)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: memCopy
+   desc: copies a block of conventional memory to another
+  
+   type: sub
+   args: [in] dst:long,		| destine
+  	      src:long,		| source
+  	      bytes:long      	| number of bytes to copy (can be > 64k)
+   retn: none
+  
+   decl: memCopy (byval dst as long, byval src as long,_
+  		  byval bytes as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: fileOpen
+   desc: opens a existent or create a new file
+  
+   type: function
+   args: [out] f:FILE           | FILE structure w/ info about the file
+          [in] fname:string,    | file name
+               mode:integer     | mode (CREATE, APPEND, READ, WRITE, RW)
+   retn: integer                | TRUE if ok, FALSE otherwise
+  
+   decl: fileOpen% (seg f as FILE,_
+                    fname as string,_
+                    byval mode as integer)
+  
+   chng: sep/01 written [v1ctor]
+   obs.: none
+
+:::
+   name: fileClose
+   desc: closes a file previously opened by fileOpen
+  
+   type: sub
+   args: [in] f:FILE            | FILE structure of file to close
+   retn: none
+  
+   decl: fileClose (seg f as FILE)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: fileRead
+   desc: reads a block of data from a file to memory
+  
+   type: function
+   args: [in] f:FILE,       	| FILE structure of file to read
+              dst:long,         | far address of destine memory block
+              bytes:long        | number of bytes to read (< 64K)
+   retn: long                   | number of bytes read (0 if error)
+  
+   decl: fileRead& (seg f as FILE, byval dst as long,_
+                    byval bytes as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: fileWrite
+   desc: writes a block of data from memory to a file
+  
+   type: function
+   args: [in] f:FILE,           | FILE structure of file to write
+              src:long,         | far address of source memory block
+              bytes:long        | number of bytes to write (< 64K)
+   retn: long                   | number of bytes written (0 if error)
+  
+   decl: fileWrite& (seg f as FILE, byval src as long,_
+                     byval bytes as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: fileReadH
+   desc: reads a huge block of data from a file to memory
+  
+   type: function
+   args: [in] f:FILE,       	| FILE structure of file to read
+              dst:long,         | far address of destine memory block
+              bytes:long        | number of bytes to read (can be > 64K)
+   retn: long                   | number of bytes read (0 if error)
+  
+   decl: fileReadH& (seg f as FILE, byval dst as long,_
+                     byval bytes as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: fileWriteH
+   desc: writes a huge block of data from memory to a file
+  
+   type: function
+   args: [in] f:FILE,           | FILE structure of file to write
+              src:long,         | far address of source memory block
+              bytes:long        | number of bytes to write (can be > 64K)
+   retn: long                   | number of bytes written (0 if error)
+  
+   decl: fileWriteH& (seg f as FILE, byval src as long,_
+                      byval bytes as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: fileEOF
+   desc: checks if at end of file
+  
+   type: function
+   args: [in] f:FILE            | FILE structure of file to check
+   retn: integer                | -1 if EOF, 0 otherwise
+  
+   decl: fileEOF% (seg f as FILE)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: filePos
+   desc: gets the current file pointer position
+  
+   type: function
+   args: [in] f:FILE            | FILE structure of file to get position
+   retn: long                   | current position (-1 if error)
+  
+   decl: filePos& (seg f as FILE)
+  
+   chng: sep/01 [v1ctor]
+   obs.: the ptrPos field in the FILE struct can also be read directly
+
+:::
+   name: fileSize
+   desc: gets the current file size
+  
+   type: function
+   args: [in] f:FILE            | FILE structure of file to get the size
+   retn: long                   | current size (-1 if error)
+  
+   decl: fileSize& (seg f as FILE)
+  
+   chng: sep/01 [v1ctor]
+   obs.: the size field in the FILE struct can also be read directly
+
+:::
+   name: fileSeek
+   desc: changes the file pointer position
+  
+   type: function
+   args: [in] f:FILE,           | FILE structure of file to seek
+              origin:integer,   | seek origin: from start, current or end
+              bytes:long        | distance from origin (signed)
+   retn: long                   | position after seek (-1 if error)
+  
+   decl: fileSeek& (seg f as FILE,_
+                    byval origin as integer,_
+                    byval bytes as long)
+  
+   chng: sep/01 [v1ctor]
+   obs.: none
+
+:::
+   name: fileCopy
+   desc: copies a block of data from a file to another
+  
+   type: function
+   args: [in] inFile:FILE,      | FILE structure of file to copy from
+  	      inOffs:long,	| start position inside inFile
+  	      outFile:FILE,     | FILE structure of file to copy to
+  	      outOffs:long,	| start position inside outFile
+              bytes:long        | bytes to copy
+   retn: integer                | TRUE if ok, FALSE otherwise
+  
+   decl: fileCopy% (seg inFile as FILE, byval inOffs as long,_
+     	            seg outFile as FILE, byval outOffs as long,_
+                    byval bytes as long)
+  
+   chng: mar/02 [v1ctor]
+   obs.: inFile and outFile can be the same, but blocks can't overlap
+

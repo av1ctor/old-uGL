@@ -1,0 +1,62 @@
+[ActiveConfig]
+x-snd\x-snd.vpj=Release
+x-snd\snd.vpj=,Release
+ugl.vpj=Release
+[Global]
+CurrentProject=ugl.vpj
+[ProjectDates]
+ugl.vpj=20040626185639765
+[TreeExpansion]
+ugl.vpj 1 1 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0
+[State]
+SCREEN: 1024 768 0 75 802 434 0 0 M 0 0 0 0 750 510
+CWD: ..\src
+BUFFER: BN="music\modplay.c"
+BI: MA=1 74 1  TABS=1 5  WWS=1 IWT=0 ST=0 IN=2 BW=0 US=32000 RO=0 SE=1 SN=0 BIN=0 MN=C	HM=0 MF=8 TL=0 MLL=0 ASE=0 LNL=6 LCF=0 CAPS=0 E=0 ESBU2=-1
+VIEW: LN=.9895 CL=43 LE=0 CX=42 CY=8 WI=5 BI=14 HT=0 HN=0 HF=0 HC=4
+BUFFER: BN="ugl\uglpal.asm"
+BI: MA=1 74 1  TABS=1 9  WWS=1 IWT=0 ST=0 IN=1 BW=0 US=32000 RO=0 SE=1 SN=0 BIN=0 MN=Intel Assembly	HM=0 MF=8 TL=0 MLL=0 ASE=0 LNL=6 LCF=0 CAPS=0 E=0 ESBU2=-1
+VIEW: LN=.4450 CL=1 LE=0 CX=0 CY=13 WI=5 BI=24 HT=0 HN=0 HF=0 HC=4
+WINDOW: 22 22 640 264 -1 -1 N  WF=0 WT=3 "Courier New,9,0,1"
+BUFFER: BN="ugl\uglpal.asm"
+VIEW: LN=.4450 CL=1 LE=0 CX=0 CY=13 WI=127 BI=24 HT=0 HN=0 HF=0 HC=4
+WINDOW: 22 22 530 452 -1 -1 M  WF=0 WT=2 "Courier New,9,0,1"
+BUFFER: BN="music\modplay.c"
+VIEW: LN=.9895 CL=43 LE=0 CX=42 CY=8 WI=107 BI=14 HT=0 HN=0 HF=0 HC=4
+FILEHIST: 9
+ugl\uglpal.asm
+..\inc\ugl.bi
+..\inc\mod.bi
+music\inc\modload.h
+music\inc\modcmn.h
+music\inc\modmain.h
+music\modmem.c
+music\modmain.c
+music\modplay.c
+[TreeExpansion2]
+- ugl.vpj
+  + 2dfx
+  + cfmt
+    + b15
+    + b16
+    + b32
+    + b8
+  + dct
+  + dos
+  + ems
+  + inc
+  + ..\inc
+  + misc
+  + mods
+  - music
+    - inc
+  + tools
+    - ttf2uvf
+    + wtltest
+  - ugl
+  + uglu
+  + xsnd
+    + inc
+    + snddrv
+      - inc
+scroll:1

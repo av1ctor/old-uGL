@@ -1,0 +1,530 @@
+<!DOCTYPE Project SYSTEM "http://www.slickedit.com/dtd/vse/9.1/vpj.dtd">
+<Project
+	Version="9.1"
+	VendorName="SlickEdit"
+	WorkingDir=".">
+	<Config
+		Name="Release"
+		CompilerConfigName="Latest Version">
+		<Menu>
+			<Target
+				Name="Build"
+				MenuCaption="&amp;Build"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer"
+				SaveOption="SaveAll">
+				<Exec CmdLine="mk4qb.bat"/>
+			</Target>
+			<Target
+				Name="Build PDS"
+				MenuCaption="Build &amp;PDS"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer"
+				SaveOption="SaveAll">
+				<Exec CmdLine="mk4pds.bat"/>
+			</Target>
+			<Target
+				Name="Build vBD"
+				MenuCaption="Build &amp;VBD"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer"
+				SaveOption="SaveAll">
+				<Exec CmdLine="mk4vbd.bat"/>
+			</Target>
+			<Target
+				Name="Build BC"
+				MenuCaption="&amp;Build BC"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer"
+				SaveOption="SaveAll">
+				<Exec CmdLine="mk4bc.bat"/>
+			</Target>
+			<Target
+				Name="Build All"
+				MenuCaption="&amp;Build All"
+				ShowOnMenu="HideIfNoCmdLine"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer"
+				SaveOption="SaveAll">
+				<Exec CmdLine="buildall.bat"/>
+			</Target>
+			<Target
+				Name="Clean"
+				MenuCaption="&amp;Clean"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer">
+				<Exec CmdLine="mk4qb.bat clean"/>
+			</Target>
+			<Target
+				Name="Clean PDS"
+				MenuCaption="&amp;Clean PDS"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer">
+				<Exec CmdLine="mk4pds.bat clean"/>
+			</Target>
+			<Target
+				Name="Clean VBD"
+				MenuCaption="&amp;Clean VBD"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer">
+				<Exec CmdLine="mk4vbd.bat clean"/>
+			</Target>
+			<Target
+				Name="Clean BC"
+				MenuCaption="&amp;Clean BC"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer">
+				<Exec CmdLine="mk4bc.bat clean"/>
+			</Target>
+			<Target
+				Name="Clean All"
+				MenuCaption="&amp;Clean All"
+				ShowOnMenu="HideIfNoCmdLine"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer">
+				<Exec CmdLine="cleanall.bat"/>
+			</Target>
+			<Target
+				Name="Debug"
+				MenuCaption="&amp;Debug"
+				ClearProcessBuffer="1"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer">
+				<Exec CmdLine="debug.bat"/>
+			</Target>
+			<Target
+				Name="Release"
+				MenuCaption="&amp;Release"
+				ClearProcessBuffer="1"
+				ShowOnMenu="HideIfNoCmdLine"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer">
+				<Exec CmdLine="release.bat"/>
+			</Target>
+			<Target
+				Name="Compile"
+				MenuCaption="&amp;Compile"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer"
+				SaveOption="SaveCurrent">
+				<Exec CmdLine="ml /c /Cp /D__CMP__=VBD /Iinc %i %f"/>
+			</Target>
+			<Target
+				Name="Execute"
+				MenuCaption="E&amp;xecute"
+				RunFromDir="%rw"
+				ShowOnMenu="HideIfNoCmdLine">
+				<Exec CmdLine='".exe"'/>
+			</Target>
+			<Target
+				Name="Rebuild"
+				MenuCaption="&amp;Rebuild"
+				RunFromDir="%rw"
+				ShowOnMenu="HideIfNoCmdLine">
+				<Exec/>
+			</Target>
+		</Menu>
+		<Includes>
+			<Include Dir="inc/"/>
+		</Includes>
+	</Config>
+	<CustomFolders>
+		<Folder
+			Name="mods"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="dct"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="ems"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="inc"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="test"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="other files"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="dos"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="bi"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="uglu"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="2dfx"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="misc"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="music"
+			Filters="">
+			<Folder
+				Name="inc"
+				Filters="">
+			</Folder>
+			<Folder
+				Name="src"
+				Filters="">
+			</Folder>
+		</Folder>
+		<Folder
+			Name="mak"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="ugl"
+			Filters="">
+		</Folder>
+		<Folder
+			Name="cfmt"
+			Filters="">
+			<Folder
+				Name="b8"
+				Filters="">
+			</Folder>
+			<Folder
+				Name="b15"
+				Filters="">
+			</Folder>
+			<Folder
+				Name="b16"
+				Filters="">
+			</Folder>
+			<Folder
+				Name="b32"
+				Filters="">
+			</Folder>
+		</Folder>
+	</CustomFolders>
+	<CompatibleVersions>
+		<PrevVersion VersionNumber="9.0"/>
+	</CompatibleVersions>
+	<Files AutoFolders="DirectoryView">
+		<Folder Name="2dfx">
+			<F N="2dfx/2dfx.txt"/>
+			<F N="2dfx/tfxLut.asm"/>
+			<F N="2dfx/tfxMask.asm"/>
+			<F N="2dfx/tfxPack.asm"/>
+			<F N="2dfx/tfxSolid.asm"/>
+			<F N="2dfx/tfxUnpk.asm"/>
+		</Folder>
+		<Folder Name="cfmt">
+			<Folder Name="b15">
+				<F N="cfmt/b15/15conv.asm"/>
+				<F N="cfmt/b15/15conv_m.asm"/>
+				<F N="cfmt/b15/15hflip.asm"/>
+				<F N="cfmt/b15/15main.asm"/>
+				<F N="cfmt/b15/15plxg.asm"/>
+				<F N="cfmt/b15/15plxtg.asm"/>
+				<F N="cfmt/b15/15putm.asm"/>
+				<F N="cfmt/b15/15puts.asm"/>
+				<F N="cfmt/b15/15stub.asm"/>
+				<F N="cfmt/b15/B15.mk"/>
+				<F N="cfmt/b15/common.inc"/>
+			</Folder>
+			<Folder Name="b16">
+				<F N="cfmt/b16/16conv.asm"/>
+				<F N="cfmt/b16/16conv_m.asm"/>
+				<F N="cfmt/b16/16hflip.asm"/>
+				<F N="cfmt/b16/16line.asm"/>
+				<F N="cfmt/b16/16main.asm"/>
+				<F N="cfmt/b16/16pixel.asm"/>
+				<F N="cfmt/b16/16plxf.asm"/>
+				<F N="cfmt/b16/16plxg.asm"/>
+				<F N="cfmt/b16/16plxt.asm"/>
+				<F N="cfmt/b16/16plxtg.asm"/>
+				<F N="cfmt/b16/16putm.asm"/>
+				<F N="cfmt/b16/16puts.asm"/>
+				<F N="cfmt/b16/16stub.asm"/>
+				<F N="cfmt/b16/16tfill.asm"/>
+				<F N="cfmt/b16/16vline.asm"/>
+				<F N="cfmt/b16/B16.mk"/>
+				<F N="cfmt/b16/common.inc"/>
+			</Folder>
+			<Folder Name="b32">
+				<F N="cfmt/b32/32conv.asm"/>
+				<F N="cfmt/b32/32conv_m.asm"/>
+				<F N="cfmt/b32/32hflip.asm"/>
+				<F N="cfmt/b32/32line.asm"/>
+				<F N="cfmt/b32/32main.asm"/>
+				<F N="cfmt/b32/32pixel.asm"/>
+				<F N="cfmt/b32/32plxf.asm"/>
+				<F N="cfmt/b32/32plxg.asm"/>
+				<F N="cfmt/b32/32plxt.asm"/>
+				<F N="cfmt/b32/32plxtg.asm"/>
+				<F N="cfmt/b32/32putm.asm"/>
+				<F N="cfmt/b32/32puts.asm"/>
+				<F N="cfmt/b32/32stub.asm"/>
+				<F N="cfmt/b32/32vline.asm"/>
+				<F N="cfmt/b32/B32.mk"/>
+				<F N="cfmt/b32/common.inc"/>
+			</Folder>
+			<Folder Name="b8">
+				<F N="cfmt/b8/8conv.asm"/>
+				<F N="cfmt/b8/8conv_m.asm"/>
+				<F N="cfmt/b8/8hflip.asm"/>
+				<F N="cfmt/b8/8line.asm"/>
+				<F N="cfmt/b8/8main.asm"/>
+				<F N="cfmt/b8/8pixel.asm"/>
+				<F N="cfmt/b8/8plxf.asm"/>
+				<F N="cfmt/b8/8plxg.asm"/>
+				<F N="cfmt/b8/8plxt.asm"/>
+				<F N="cfmt/b8/8plxtg.asm"/>
+				<F N="cfmt/b8/8plxtp.asm"/>
+				<F N="cfmt/b8/8plxtpg.asm"/>
+				<F N="cfmt/b8/8putb.asm"/>
+				<F N="cfmt/b8/8putm.asm"/>
+				<F N="cfmt/b8/8puts.asm"/>
+				<F N="cfmt/b8/8stub.asm"/>
+				<F N="cfmt/b8/8tfill.asm"/>
+				<F N="cfmt/b8/8vline.asm"/>
+				<F N="cfmt/b8/B8.mk"/>
+				<F N="cfmt/b8/common.inc"/>
+			</Folder>
+		</Folder>
+		<Folder Name="dct">
+			<F N="dct/common.inc"/>
+			<F N="dct/DCT.mk"/>
+			<F N="dct/dctbnk.asm"/>
+			<F N="dct/dctems.asm"/>
+			<F N="dct/dctmem.asm"/>
+		</Folder>
+		<Folder Name="dos">
+			<F N="dos/common.inc"/>
+			<F N="dos/DOS.mk"/>
+			<F N="dos/dosbfile.asm"/>
+			<F N="dos/dosfile.asm"/>
+			<F N="dos/dosmem.asm"/>
+		</Folder>
+		<Folder Name="ems">
+			<F N="ems/common.inc"/>
+			<F N="ems/EMS.mk"/>
+			<F N="ems/emsalloc.asm"/>
+			<F N="ems/emsavail.asm"/>
+			<F N="ems/emsblock.asm"/>
+			<F N="ems/emsfill.asm"/>
+			<F N="ems/emsfree.asm"/>
+			<F N="ems/emsheap.asm"/>
+			<F N="ems/emsmap.asm"/>
+			<F N="ems/emssave.asm"/>
+		</Folder>
+		<Folder Name="inc">
+			<F N="inc/arch.inc"/>
+			<F N="inc/bas.h"/>
+			<F N="inc/bez.inc"/>
+			<F N="inc/cfmt.inc"/>
+			<F N="inc/cpu.inc"/>
+			<F N="inc/dct.inc"/>
+			<F N="inc/dos.inc"/>
+			<F N="inc/ems.inc"/>
+			<F N="inc/equ.inc"/>
+			<F N="inc/exitq.inc"/>
+			<F N="inc/fileio.inc"/>
+			<F N="inc/fjmp.inc"/>
+			<F N="inc/font.inc"/>
+			<F N="inc/kbd.inc"/>
+			<F N="inc/lang.inc"/>
+			<F N="inc/log.inc"/>
+			<F N="inc/misc.inc"/>
+			<F N="inc/mouse.inc"/>
+			<F N="inc/mscshpc.inc"/>
+			<F N="inc/polyx.inc"/>
+			<F N="inc/snd.inc"/>
+			<F N="inc/timer.inc"/>
+			<F N="inc/u3d.inc"/>
+			<F N="inc/ugl.inc"/>
+			<F N="inc/uglu.inc"/>
+			<F N="inc/vbe.inc"/>
+			<F N="inc/vdo.inc"/>
+			<F N="inc/version.inc"/>
+		</Folder>
+		<Folder Name="../inc">
+			<F N="../inc/arch.bi"/>
+			<F N="../inc/arch.h"/>
+			<F N="../inc/deftypes.h"/>
+			<F N="../inc/dos.bi"/>
+			<F N="../inc/dos.h"/>
+			<F N="../inc/ems.bi"/>
+			<F N="../inc/ems.h"/>
+			<F N="../inc/font.bi"/>
+			<F N="../inc/font.h"/>
+			<F N="../inc/kbd.bi"/>
+			<F N="../inc/kbd.h"/>
+			<F N="../inc/mod.bi"/>
+			<F N="../inc/mouse.bi"/>
+			<F N="../inc/mouse.h"/>
+			<F N="../inc/snd.bi"/>
+			<F N="../inc/snd.h"/>
+			<F N="../inc/tmr.bi"/>
+			<F N="../inc/tmr.h"/>
+			<F N="../inc/ugl.bi"/>
+			<F N="../inc/ugl.h"/>
+			<F N="../inc/uglu.bi"/>
+			<F N="../inc/uglu.h"/>
+		</Folder>
+		<Folder Name="misc">
+			<F N="misc/MISC.mk"/>
+			<F N="misc/msccpu.asm"/>
+			<F N="misc/mscexitq.asm"/>
+			<F N="misc/mscfilio.asm"/>
+			<F N="misc/msclog.asm"/>
+			<F N="misc/mscmisc.asm"/>
+			<F N="misc/mscopmov.asm"/>
+			<F N="misc/mscopsto.asm"/>
+			<F N="misc/mscshfa.asm"/>
+			<F N="misc/mscshga.asm"/>
+			<F N="misc/mscshta.asm"/>
+			<F N="misc/mscshtp.asm"/>
+		</Folder>
+		<Folder Name="mods">
+			<F N="mods/common.inc"/>
+			<F N="mods/mdarch.asm"/>
+			<F N="mods/mdfont.asm"/>
+			<F N="mods/mdkbd.asm"/>
+			<F N="mods/mdmath.asm"/>
+			<F N="mods/mdmouse.asm"/>
+			<F N="mods/mdtimer.asm"/>
+			<F N="mods/mdu3d.asm"/>
+			<F N="mods/mdvbe.asm"/>
+			<F N="mods/MODS.mk"/>
+		</Folder>
+		<Folder Name="music">
+			<Folder Name="inc">
+				<F N="music/inc/modcmn.h"/>
+				<F N="music/inc/modload.h"/>
+				<F N="music/inc/modmain.h"/>
+				<F N="music/inc/modmem.h"/>
+				<F N="music/inc/modplay.h"/>
+				<F N="music/inc/modtbl.h"/>
+			</Folder>
+			<F N="music/modcmn.c"/>
+			<F N="music/modctrl.c"/>
+			<F N="music/modload.c"/>
+			<F N="music/modmain.c"/>
+			<F N="music/modmem.c"/>
+			<F N="music/modplay.c"/>
+			<F N="music/modtbl.c"/>
+			<F N="music/MUSIC.mk"/>
+		</Folder>
+		<Folder Name="tools">
+			<Folder Name="ttf2uvf">
+				<F N="tools/ttf2uvf/previewbutton.cpp"/>
+				<F N="tools/ttf2uvf/previewbutton.h"/>
+				<F N="tools/ttf2uvf/Resource.h"/>
+				<F N="tools/ttf2uvf/StdAfx.cpp"/>
+				<F N="tools/ttf2uvf/StdAfx.h"/>
+				<F N="tools/ttf2uvf/ttf2uvf.cpp"/>
+				<F N="tools/ttf2uvf/ttf2uvf.h"/>
+				<F N="tools/ttf2uvf/ttf2uvfb.cpp"/>
+				<F N="tools/ttf2uvf/ttf2uvfb.h"/>
+				<F N="tools/ttf2uvf/ttf2uvfDlg.cpp"/>
+				<F N="tools/ttf2uvf/ttf2uvfDlg.h"/>
+				<F N="tools/ttf2uvf/uvf.cpp"/>
+				<F N="tools/ttf2uvf/uvf.h"/>
+			</Folder>
+			<Folder Name="wtltest">
+				<F N="tools/wtltest/aboutdlg.cpp"/>
+				<F N="tools/wtltest/aboutdlg.h"/>
+				<F N="tools/wtltest/mainfrm.cpp"/>
+				<F N="tools/wtltest/mainfrm.h"/>
+				<F N="tools/wtltest/resource.h"/>
+				<F N="tools/wtltest/stdafx.cpp"/>
+				<F N="tools/wtltest/stdafx.h"/>
+				<F N="tools/wtltest/wtltest.cpp"/>
+				<F N="tools/wtltest/wtltest.h"/>
+				<F N="tools/wtltest/wtltestview.cpp"/>
+				<F N="tools/wtltest/wtltestview.h"/>
+			</Folder>
+		</Folder>
+		<Folder Name="ugl">
+			<F N="ugl/common.inc"/>
+			<F N="ugl/UGL.mk"/>
+			<F N="ugl/uglbez.asm"/>
+			<F N="ugl/uglbmp.asm"/>
+			<F N="ugl/uglclear.asm"/>
+			<F N="ugl/uglcolor.asm"/>
+			<F N="ugl/uglconv.asm"/>
+			<F N="ugl/ugldc.asm"/>
+			<F N="ugl/ugldel.asm"/>
+			<F N="ugl/uglelip.asm"/>
+			<F N="ugl/uglelipf.asm"/>
+			<F N="ugl/uglget.asm"/>
+			<F N="ugl/uglhack.asm"/>
+			<F N="ugl/uglhline.asm"/>
+			<F N="ugl/uglline.asm"/>
+			<F N="ugl/uglmain.asm"/>
+			<F N="ugl/uglmode.asm"/>
+			<F N="ugl/uglnew.asm"/>
+			<F N="ugl/uglpage.asm"/>
+			<F N="ugl/uglpal.asm"/>
+			<F N="ugl/uglpixel.asm"/>
+			<F N="ugl/uglplxf.asm"/>
+			<F N="ugl/uglplxg.asm"/>
+			<F N="ugl/uglplxt.asm"/>
+			<F N="ugl/uglplxtp.asm"/>
+			<F N="ugl/uglpoly.asm"/>
+			<F N="ugl/uglpolyf.asm"/>
+			<F N="ugl/uglput.asm"/>
+			<F N="ugl/uglputb.asm"/>
+			<F N="ugl/uglputm.asm"/>
+			<F N="ugl/uglrect.asm"/>
+			<F N="ugl/uglrectf.asm"/>
+			<F N="ugl/uglrow.asm"/>
+			<F N="ugl/uglrtscl.asm"/>
+			<F N="ugl/uglsel.asm"/>
+			<F N="ugl/uglvline.asm"/>
+		</Folder>
+		<Folder Name="uglu">
+			<F N="uglu/common.inc"/>
+			<F N="uglu/glubez.asm"/>
+			<F N="uglu/glubez3d.asm"/>
+			<F N="uglu/glucpuft.asm"/>
+			<F N="uglu/UGLU.mk"/>
+		</Folder>
+		<Folder Name="xsnd">
+			<Folder Name="inc">
+				<F N="xsnd/inc/common.h"/>
+				<F N="xsnd/inc/common.inc"/>
+				<F N="xsnd/inc/snd.h"/>
+				<F N="xsnd/inc/sndmain.h"/>
+				<F N="xsnd/inc/sndnew.h"/>
+			</Folder>
+			<Folder Name="snddrv">
+				<Folder Name="inc">
+					<F N="xsnd/snddrv/inc/sbdrv.h"/>
+					<F N="xsnd/snddrv/inc/sbdrvint.h"/>
+				</Folder>
+				<F N="xsnd/snddrv/sbdrv.c"/>
+			</Folder>
+			<F N="xsnd/sndamain.asm"/>
+			<F N="xsnd/sndconv.c"/>
+			<F N="xsnd/sndctrl.c"/>
+			<F N="xsnd/sndint.c"/>
+			<F N="xsnd/sndmain.c"/>
+			<F N="xsnd/sndmixer.c"/>
+			<F N="xsnd/sndnew.c"/>
+			<F N="xsnd/sndplay.c"/>
+		</Folder>
+		<F N="common.mk"/>
+		<F N="makefile.mk"/>
+		<F N="startup.mk"/>
+	</Files>
+</Project>

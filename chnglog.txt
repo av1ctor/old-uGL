@@ -1,0 +1,410 @@
+.....
+build 0.24b
+    Added:
+        - UGL.XMS DC type, DC's allocated on XMS, obs:
+	  1) the module stills under testing 
+          2) you CAN'T draw a XMS DC to another XMS DC
+	
+	- an EMS "emulator", works for most tests, fails
+          on a bunch too :P forget about sound, it will
+          only help with graphics (DC's allocated on EMS)
+          and 32K of conventional memory will be taken
+          when the emulator is needed - speed will decrase
+          too, 'cause all copies needed (and some ppl
+          say XMS is faster than EMS.. they probably never
+          used any of those at low-level :P)
+
+	- Long File Name support to all file routines
+
+        - uglTriTG & uglTriTPG: affine & perspective correct
+          texture-mapped and gouraud-shaded triangles (man,
+          what a long name :P)
+
+        - uglSetLUT: used to define the color Look Up Table
+          used by uglTriTG & uglTriTPG in 8-bit modes
+
+        - uglPalBestFit: searches for the nearest color in a
+          palette
+
+        - uglPalFade, uglPalFadeIn, uglPalFadeOut, you probably
+          can guess by the names :P palette fading in accurate
+          time, no matter the cpu where them are used
+
+        - uglBlit and uglBlitMsk: draws just part of a source
+          DC onto a destine DC
+
+        - uglBlitScl and uglBlitMskScl: same as uglBlit, but with
+          scaling (Warning: source coordinates are not checked)
+
+        - uglBlitFlipScl and uglBlitMskFlipScl: same as uglBlitScl,
+          but doing flipping too (we'll break QB's function
+          names max length soon :P)
+
+        - uglBlitRotScl and uglBlitMskRotScl: same as uglBlitScl,
+          but doing rotation too (source DC's width and height
+          must be power of 2, as the wdt & hgt arguments)
+
+        - uglPutFlipScl and uglPutMskFlipScl: flipped and scaled
+          image and sprite drawing (using the new algo, see note
+          below about uglPutScl)
+
+        - ugluSaveTGA: saves a DC to disk, in TARGA 24-bit format
+
+        - 2DFX module:
+          * reads from any color format (1 to 32 bpp (no 24-bit))
+          * can read only part of a source DC (store your tiles and
+            sprites in just one big bitmap)
+          * writes to any CFMT (8, 15, 16 and 32bpp)
+          * can do scaling
+          * can do horizontal and/or vertical flipping
+          * can do masking (skips BRIGHT PINK or any user defined color)
+          * can do color substitution: solid color (sprites only),
+                                       LUT (for paletted-like effects),
+                                       mono color (for light effects),
+                                       texture (NOT implemented yet),
+
+          * can do a 2nd pass color sub: factor multiply (for shading),
+                                         factor add (for color effects)
+
+          * can do blending (up to 256 levels) using this
+            modes (currently): alpha,
+                               mono multiplication,
+                               saturated addition,
+                               saturated subtraction,
+			       saturated addition times alpha
+
+
+    Fixed:
+        - uglPutFlip and uglPutMskFlip: both had errors when
+          clipping was needed, my bad :P
+
+
+    Rewritten:
+        - uglPutScl and uglPutMskScl: they are not using the
+          tmappers anymore, so source DC's can have any size
+          and the dimensions don't have to be power of 2
+
+.....
+build 0.23b
+    Added:
+        - Added a perspective correct tmapper!!!
+          Yeah!! It's around 20% slower then the affine mapper
+          on my athlon. So it's not that bad. I still have more
+          optimisations to do though. Migh be able to crank up
+          the performance another 5-10%. Right now i'm just happy
+          that it works. It was a bitch to code in asm. Intel sucks,
+          bigtime.
+
+        - uglTriG now supports linear palettes in 8 bit mode.
+          Use uglPalUsingLin to switch between 332 and linear palette
+          modes.
+
+    Fixed:
+        - uglSetVideoDC would fail if calling it after uglRestore if
+          the resolution was same as before.
+
+        - The library builder wouldn't build, reporting that atleast
+          one bpp has to be selected when you had selected just 8 bit.
+
+
+    Changes:
+        - Mod player now supports vibrato, tremolo and arpegio.
+          I'm still not completly happy with the mod player.
+
+        - Sutherland-Hodgman clipping is now split up into several
+          files becuase of two reasons. The major reason is size.
+          The module when assembled was 16 kb. And if you use any
+          of the convex polygon routines you had to include all of
+          those 16 kbs. It now works much smarter, including only
+          what's needed. The second reason for splitting it up into
+          more files is for simplecity, a new set of routines are
+          coming up, can you guess what they are? No? Perspective
+          correct texturemapping and eventually gouruad. Neatooo.
+
+.....
+build 0.22a
+    Added:
+        - A mod player. Yepp, you read correctly. However, as
+          it's summer i'm not going to waste time coding. So
+          vibrato, tremolo and arpegio aren't implemented.
+          But other then that it works perfect.
+
+.....
+build 0.21d
+    Added:
+        - snd.h, the C header for the sound module.
+          Forgot to add that before, sorry guys.
+
+        - palette.bas, an example on how to use the
+          palette.
+
+    Fixed:
+        - Fixed a bug in uglPalGet and uglPalGetBuff
+
+        - ugl.bi and snd.bi, there was some missdeclarations
+          there. Blame that lazy son of a gun v1ctor, he never
+          tests anything he codes! %#&
+
+.....
+build 0.21c
+    Added:
+        - The ability to add your own objs/libs to the builder.
+
+    Fixed:
+        - A few bugs in the library builder
+
+        - A bug in the sound module which caused it not to use the
+          beats per second setting.
+
+.....
+build 0.21b
+    Added:
+        - sound module! yeah babe, did you hear that? sound!
+
+        - ems save & restore, context saving stuff for use on ISR's
+
+    Fixed:
+    - uglPGet bug fixed
+
+        - Updated a manual a bit, still not 100% complete though
+
+        - ems mapping was buggy, was always starting the map at lpage 0.
+          now multiple page mapping is used too, should be much faster if
+          mapping more than one page at time
+
+        - pget had a bug! omfg, can you believe that? are we lazy c0derz
+          or what? :P
+
+        - a bunch of things i didn't document and that i don't remember now!
+          note to self: change logs must be updated or they are otherwise
+          pretty much useless [period]
+
+.....
+build 0.20b
+    Added:
+        - palette set/get/load functions, don't expect routines that need
+          a 332 (rgb) fixed palette to work, they won't :P
+
+        - uglNew/PutBMPEx routines, added options to not convert to 332
+          palette when loading 8-bit BMPs and to do masking (setting a
+          mask value for 8-bit bitmaps)
+
+        - uglRowWriteEx & uglPutMskConv, can do masking now when converting
+          between DCs with different bpp's
+
+    Fixed:
+        - tmapper crashing 'cause too tiny polygons
+
+        - tri/quad not filling the whole destine dc (last col and row)
+
+        - uglDCAccess# routines had stupid and er, invisible, er bugs...
+
+        - mouseCursor will handle the conversion from cursors of lower
+          bpp's to higher ones (no mask will be lost)
+
+.....
+build 0.19b
+    Added:
+        - support for Borland/Turbo C/C++ real-mode compiler (medium memory
+          model), including libs (both for release and debug modes), headers
+          and some examples (headers are probably compatible with M$-C/QuickC
+          and Watcom-C compilers, but calls to non ansi-c functions like
+          farmalloc, farfree and farcoreleft are done, that may be a problem
+          with other C real-mode DOS compilers than BC).
+
+        - DOS memory allocation strategy is changed to include UMBs in the
+          DOS memory chain (not when NT is detected, seems like adding
+          UMBs doesn't work right in NT DOS boxes; can give up to 100K of
+          memory depending on OS, EMS manager and TSRs loaded)
+
+        - uglDCAccessRd, uglDCAccessWr and uglDCAccessRdWr functions, for
+          direct DC frame-buffer access (warning: seem to not work in
+          QB/PDS/VBD probably 'cause yet-another-QB-bug; when used in C,
+          all seems fine)
+
+    Fixed:
+        - no more holes between triangles/quadrangles when using uglTri# and
+          uglQuad# routines
+
+        - tmapper (TriT/QuadT) no more crashes when handling too tiny polys
+
+        - no more crashes when there isn't EMS or VESA support
+
+        - vga mode 13h will always be used if setting 320x200x8 + 1 page
+
+.....
+build 0.18b
+    Added:
+        - uglPutRot, uglPutScl, uglPutRotScl,
+          uglPutMskRot, uglPutMskScl, uglPutMskRotScl
+
+        - uglTriF, uglTriG, uglTriT, uglQuadF, uglQuadT
+
+        - 4-bit RLE support for uglNewBMP and uglPutBMP routines
+
+        - AUTOINIT operation mode for timers
+
+.....
+build 0.17b
+    Note:
+        - There's a problem with Viper III cards, all modes but 320x200x8
+          and 320x240x8 work. It's seems that this is a hardware problem.
+          When trying to change the bytes per scanline in these modes the
+          computer hangs. This was partially fixed by not changing bytes
+          per scanline in 320x200x8 since it's under 64 KB anyway. But for
+          320x240x8 more testing is needed to find the exact problem, if
+          this is a hardware problem there is nothing we can do. If you
+          have a Viper III and have this problem you should try the univbe
+          driver or a firmware update.
+
+    Changed:
+        - all routines for direct access to archives (Quake I/II's PAK)
+          are now at arch module (protos at bi/arch.bi include file)
+
+        - all routines that load files (ie: fontLoad, uglNewBMP, uglPutBMP)
+          now support archives directly
+
+        - no more limits on number of files on an archive when using
+          the uarFileAdd and uarFileDel routines (the recommendation to
+          use an extern tool (ie, PAKExplorer) to change/update your
+          archives still applying, as no temp file is used, if any error
+          occur while updating the archives, the archive would be
+          inaccessible next time you 'd try loading files from it;
+          resuming: if you do some mistake using the Add and/or Del
+          routines and your archive get screwed and somehow you don't have
+          backups of the files that were added to it... don't blame us :P;
+          use the uarCreate, uarFileAdd and uarFileDel routines with care!)
+
+.....
+build 0.16a
+    Added:
+        - Ported PAK routines from C to assembly to get the size down.
+          Didn't make allot of difference but it's 50% smaller now
+
+        - Quake I/II PAK archive routines added:
+            ugluFindFile, ugluExtractFile, ugluExtractFileEx
+            ugluAddFile, ugluAddFileEx, ugluDelFile, ugluCreate
+
+        - uglEllipse and uglEllipseF: unfilled and filled ellipses drawing
+          routines
+
+    Fixed:
+        - uglCubicBez now draws correctly for levels above 16
+
+    Note:
+        - I would recomend you to only use Find and Extract routines
+          because AddFile and DelFile loads the whole PAK archive
+          "FAT" into memory. Thus the "FAT" can't be bigger then 64 KB
+          which is about 1024 files. So use Pak Explorer for
+          creation and maintanence of the archives and ugl's
+          routines for reading.
+
+.....
+build 0.15a
+    Added:
+        - uglPutFlip and uglPutMskFlip: horizontally and/or vertically
+          flipped bitmaps/sprites blting
+
+        - documentation for the font module, the module stills not
+          complete (ie, fontPrint and fontDraw routines aren't yet
+          finished and there's no bitmapped font support), but for
+          UVF (vector fonts) and printing a line at time, it's working
+          fine (until some beta-tester find some nasty bug on it :D)
+
+    Changed:
+        - a "smarter" building system: after hours trying to get m$ make
+          utility (nmake) to work (it's too dumb to understand that when
+          you define a dir to where search for dependencies, that means
+          _all_ dependencies are assumed to be there, not only the first
+          one in the list... grr!!!) and having no luck with borland's
+          make (it's not so stupid as m$ ones, tho, there is a bug with
+          the partial-filename macros when the ! command modifier is used
+          that makes it useless... grr^2), i (v1ctor) decided to try another
+          make tool: DMAKE, that is a bit more difficult to setup and to
+          convert/port to (it's like 10% m$' make-file compatible) but that
+          can do the work fine (win32 gnu-make 'd work nicelly, tho... bah...
+          too lazy to read more 500K of docs :P)... obs: dmake 4.1 is case-
+          sensitive and as LINK & LIB 16-bit don't (and cause the way used
+          to build the lib based on make-files' names), the make-files names
+          have to be UPPERCASE (with the `mk' extension in lowercase), or
+          the build will fail (all the rest, obj/asm/inc files plus dirs,
+          must be in lowercase).
+
+.....
+build 0.14a
+    Added:
+        - 4 new routines for curves added: uglQuadricBez, ugluQuadricBez,
+          ugluQuadricBez3D and ugluCubicBez3D.
+
+        - uglPolyPoly and uglPolyPolyF for draw multiple polygons at the
+          same call plus uglPoly: same as uglPolyF but draws only the
+          polygon's outlines.
+
+.....
+build 0.13a
+    Changed:
+        - The uglBox and uglBoxF routines are now called uglRect and
+          uglRectF as we "found" `rectangle' a bit more clear than 'box',
+          sorry :P.
+
+        - Surprise, the set clipping area function also changed (both name
+          and parameters) and there's now one to get the clipping rectangle
+          and set plus get the current one (uglSetClipRect, uglGetClipRect
+          and guess what... uglGetSetClipRect! :P), sorry again (that's
+          what you get by beta-testing :D).
+
+    Added:
+        - Logging for visual/working page setting routines
+
+
+.....
+build 0.12a
+    Added:
+        - By request we added more logging to UGL. So now when some routine
+          detects an invalid DC it logs that. This'll look like:
+
+          uglClear: Invalid DC
+          uglPut: Invalid src DC
+
+          This is somewhat slower because of disk access, but it's only for
+          the debug versions and when an error occurs.
+
+
+.....
+build 0.11a
+    Added:
+        - We noticed people making mistakes like sending an invalid DC to
+          some routines which made their programs crashed. So we decided to
+          "fix" that. The debug versions of the lib is now very safe and
+          pretty much impossible to crash (by the user, that is). So, our
+          tip is to use the debug libs in the IDE during development and use
+          the release when you're about to make a public release. But don't
+          be surprised if your program worked perfect with the debug libs
+          since the start and now all the suddenly crashes when you use the
+          release version. So be sure to fix any bugs you have immediately
+          so you don't have 10K bugs to fix just before you planned to
+          release your game or whatever.
+
+    Fixed:
+        - The 332 palette used in 8-bit video modes is now more accurate.
+
+
+.....
+build 0.10a
+    Fixed:
+        - The problem with Voodoo cards and win2k is fixed. Even though
+          this had nothing to do with UGL we decided that we needed to do
+          something about it. So you can use mode 320x200x8 with voodoo
+          cards, it can only have one page. In other words:
+          uglSetVideoDC(UGL.8BIT, 320, 200, 1).
+
+
+.....
+build 0.09a
+    Added:
+        - There are now debug versions of the lib. If you look under the
+          directory lib you'll see that there are two directories, debug and
+          release. And under them you have sub directories called qb4x, qb7x
+          and vb1x. The debug versions of the library create a log file
+          called ugl.log where you can exactly see where an error occurred.
+          So when you post a bug report don't forget to include ugl.log
